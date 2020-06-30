@@ -259,8 +259,8 @@ function populate() {
   document.getElementById('homeCheck').style.visibility = 'hidden';
 	for (key in boardFigures){
 		let holder = document.createElement("img");
-		holder.src = {{ url_for('static', filename = boardFigures[key].pic) }};
-		//holder.src = 'static/'+ boardFigures[key].pic;
+		//holder.src = {{ url_for('static', filename = boardFigures[key].pic) }};
+		holder.src = 'static/'+ boardFigures[key].pic;
 		holder.setAttribute("class", 'figure ' + boardFigures[key].color);
 		holder.setAttribute("id", boardFigures[key].name);
 		if(boardFigures[key].location == 'homeHolder' || boardFigures[key].location == 'awayHolder') {
