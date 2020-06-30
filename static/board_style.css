@@ -1,0 +1,100 @@
+html {
+  text-align: center;
+}
+
+#homeHolder {
+  text-align: left;
+}
+#awayHolder {
+  text-align: right;
+}
+
+#homeTimer, #awayTimer {
+  float: left;
+  min-width: 12%;
+  max-width: 12%;
+  font-size: 1.2em;
+  border: solid;
+  border-color: green;
+  
+}
+
+#awayTimer {
+  float: right;
+}
+
+#homeTimer {
+  border-bottom-right-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+#awayTimer {
+  border-top-right-radius: 8px;
+  border-top-left-radius: 8px;
+}
+
+#board {
+  display: inline-block;
+  margin: auto;
+}
+
+#boardtb {
+  //transform: rotate(180deg);
+  text-align: center;
+  border-collapse: collapse;
+  height: 500px;
+  width: 500px;
+  //margin: auto;
+}
+
+#boardtb, td, th {
+  border: 1px solid black;
+}
+tr {
+  pointer-events: none;
+}
+
+td {
+  pointer-events: none;
+  width: 12%;
+  max-width: 12%;
+  height: 12%;
+}
+tfoot:th {
+  width: 12%;
+}
+
+.coors {
+  border: none;
+  color:  #800000;
+  font-size: 1.3em;
+  min-width: 1em;
+}
+
+.dark {
+  background: darkgrey;
+}
+
+.figure {
+  margin: auto;
+  pointer-events: visiblePainted;
+}
+
+.figure {
+  margin: auto;
+  pointer-events: visiblePainted;
+}
+
+#awayCheck {
+  visibility:hidden;
+  color: red;
+  font-size: 1.3em;
+  float: left;
+}
+
+#homeCheck {
+  visibility:hidden;
+  color: red;
+  font-size: 1.3em;
+  float: right;
+}
