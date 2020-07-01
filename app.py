@@ -1,6 +1,8 @@
 from flask import Flask, url_for
 from flask import render_template
 
+from models import setup_db, Question, Category
+
 app = Flask(__name__)
 
 @app.route('/')
