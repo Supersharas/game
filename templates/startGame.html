@@ -44,7 +44,7 @@
     fetch('/chess/lobby').then(response => response.json()).then(function(response){
       console.log('response', response);
       if(response.game.id){
-        location = "game/" + response.game.id;
+        location = "chess/black/" + response.game.id;
       }
       //var newGame = document.getElementById('challange');
       //newGame.innerHTML = response.playerOne;

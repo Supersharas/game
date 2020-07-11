@@ -47,14 +47,23 @@ def start_game(offer):
   if error:
     return 'start game error'
   else:
-    return redirect(url_for('black', game = game))
+    return redirect(url_for('white', game = game))
 
 @app.route('/chess/black/<int:game>')
 def black(game):
   state = State.query.filter_by(game_id=game).first()
   data = state.position
   player_id = session['userId']
-  return render_template('black.html',data=json.dumps(data),user=player_id)
+  db.session.close()
+  return render_template('black.html', data=json.dumps(data), user=player_id)
+
+@app.route('/chess/white/<int:game>')
+def white(game):
+  state = State.query.filter_by(game_id=game).first()
+  data = state.position
+  player_id = session['userId']
+  db.session.close()
+  return render_template('white.html', data=json.dumps(data), user=player_id)
 
 @app.route('/chess')
 def chess():
