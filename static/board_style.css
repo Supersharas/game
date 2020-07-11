@@ -39,12 +39,10 @@ html {
 }
 
 #boardtb {
-  //transform: rotate(180deg);
   text-align: center;
   border-collapse: collapse;
   height: 500px;
   width: 500px;
-  //margin: auto;
 }
 
 #boardtb, td, th {

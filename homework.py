@@ -38,6 +38,7 @@ def start_game(offer):
     offer.delete()
     current_state = State(game_id=new_game.id, move_number=1,move='white',position=start_position)
     State.insert(current_state)
+    data = current_state.position
   except:
     error = True
     db.session.rollback()
@@ -45,7 +46,7 @@ def start_game(offer):
   finally:
     db.session.close()
   if error:
-    return 'start game error'
+    return 'error'
   else:
     return redirect(url_for('black', game = game))
 
@@ -86,25 +87,11 @@ def offer():
   finally:
     db.session.close()
   if error:
-    return 'offer error'
+    return 'error'
   else:
     return redirect(url_for('chess'))
   
   #return jsonify(offer.format())
-
-@app.route('/chess/lobby')
-def lobby():
-  nice_game = 'none'
-  nice_offers = []
-  offers = Offer.query.all()
-  if 'userId' in session:
-    my_game = Game.query.filter_by(player_one=session['userId']).first()
-    if my_game:
-      nice_game = my_game.format()
-  for offer in offers:
-    nice_offers.append(offer.format())
-  db.session.close()
-  return jsonify({'offers': nice_offers, 'game' : nice_game})
 
 @app.route('/logout')
 def logout():
@@ -113,4 +100,3 @@ def logout():
     return redirect(url_for('chess'))
 if __name__ == '__main__':
   app.run(host='0.0.0.0', port=8080)
-  #socketio.run(app, host='0.0.0.0', port=8080)

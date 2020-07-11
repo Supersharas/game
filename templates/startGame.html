@@ -1,0 +1,67 @@
+
+<head>
+  <style>
+    .offers {
+      display: inline-block;
+    }
+  </style>
+</head>
+
+{% if test %}
+  <a href="{{ url_for('logout') }}"><button>LOG OUT</button><a/>
+{% endif %}
+
+<h1>old fashion game</h1>
+
+<a href="{{ url_for('offer') }}"><button>create chalange</button></a>
+<button onclick="refresh()">Refresh</button>
+
+<div id="challange">
+  {% if my_game %}
+    <div class="offer"><button><h3>Please join my game {{my_game.id}}</h3></button></div>
+  {% endif %}
+</div>
+{{test}}
+
+<h1>Game lobby</h1>
+<h3>Choose your opponent wisely</h3>
+
+<div id='gameOffers'>
+  {{test}}
+  <ul id="offers">
+    {% for item in offers %}
+        <h2>Game offers</h2>
+          <a href="{{ url_for('start_game', offer = item.id) }}">
+            <h3>Play against {{item.id}}</h3>
+            </a>
+    {% endfor %}
+    </ul>
+</div>
+
+<script>
+  crazyTime = setInterval(refresh, 1000);
+  function refresh(){
+    fetch('/chess/lobby').then(response => response.json()).then(function(response){
+      console.log('response', response);
+      if(response.game.id){
+        location = "game/" + response.game.id;
+      }
+      //var newGame = document.getElementById('challange');
+      //newGame.innerHTML = response.playerOne;
+      //sessionStorage.setItem('userId', response.playerOne);
+    }).catch(function(err){
+      console.log('err', err);
+    })
+  }
+  window.onload = crazyTime();
+  function startGame(){
+    fetch('/game')
+  }
+  // let user = sessionStorage.getItem('userId');
+  // window.onload = function(){
+  //   console.log('bla bla bla');
+  //   if(user){
+
+  //   }
+  // }
+</script>
