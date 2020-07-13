@@ -60,7 +60,7 @@ function populate() {
 		let holder = document.createElement("img");
 		//holder.src = {{ url_for('/static', filename = boardFigures[key].pic) }};
     holder.alt = boardFigures[key].name;
-		holder.src = 'http://game.supersharas.repl.co/static/'+ boardFigures[key].pic;
+		holder.src = 'https://game.supersharas.repl.co/static/'+ boardFigures[key].pic;
 		holder.setAttribute("class", 'figure ' + boardFigures[key].color);
 		holder.setAttribute("id", boardFigures[key].name);
 		if(boardFigures[key].location == 'homeHolder' || boardFigures[key].location == 'awayHolder') {

@@ -4,6 +4,7 @@
   </head>
   <body>
     <h1>Game</h1>
+    <div class player>{{oponent.name}}  {{oponent.id}}</div>
     <div id='board'>
       <div id='top'>
         <div id='awayTimer'></div>
@@ -117,10 +118,13 @@
         </div>
       </div>
     </div>
-    <h1>{{user.name}} {{user.id}}</h1>
+    <div class player>{{player.name}}  {{player.id}}</div>
     <script type="text/javascript">
       var boardFigures = {{data|safe}};
+      var move = {{move|safe}};
+      var moveNumber = {{move_number|safe}}
+      var color ='black';
     </script>
-    <script src="{{ url_for('static', filename='black.js') }}"></script>
+    <script src="{{ url_for('static', filename='white.js') }}"></script>
   </body>
 </html>

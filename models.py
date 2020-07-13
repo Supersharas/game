@@ -56,6 +56,16 @@ class State(db.Model):
     db.session.delete(self)
     db.session.commit()
 
+  def format(self):
+    return {
+      'id': self.id,
+      'game_id': self.game_id,
+      'move_number': self.move_number,
+      'position': self.position,
+      #'game': self.games,
+      'move': self.move
+    }
+
 
 class Game(db.Model):
   __teblename__ = 'games'
