@@ -4,11 +4,15 @@
   </head>
   <body>
     <h1>Game</h1>{{ game }}
+    <h1>blabla bla</h1>
+    <h1>blabla bla</h1>
+    <h1>blabla bla</h1>
+    <h1>blabla bla</h1>
     <div class player>{{oponent.name}}  {{oponent.id}}</div>
     <div id='board'>
       <div id='top'>
         <div id='awayTimer'></div>
-        <div id='awayHolder'>
+        <div class='awayHolder' id='whiteHolder'>
           <div id='awayCheck'>CHECK</div>
         </div>       
       </div>
@@ -113,12 +117,13 @@
       </table>
       <div id='botom'>
         <div id='homeTimer'></div>
-        <div id='homeHolder'>
+        <div class='homeHolder' id='blackHolder'>
           <div id='homeCheck'>CHECK</div>
         </div>
       </div>
     </div>
   <div class player>{{player.name}}  {{player.id}}</div>
+  <div> FOR TESTING ONLY MOVE_NUMBER: {{move_number}}</div>
     <script type="text/javascript">
       var boardFigures = {{data|safe}};
       var move = {{move|safe}};

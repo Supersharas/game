@@ -96,17 +96,19 @@ function populate() {
 	for (key in boardFigures){
 		let holder = document.createElement("img");
 		//holder.src = {{ url_for('/static', filename = boardFigures[key].pic) }};
-    holder.alt = boardFigures[key].name;
-		holder.src = 'https://game.supersharas.repl.co/static/'+ boardFigures[key].pic;
+    	holder.alt = boardFigures[key].name;
+		//holder.src = 'https://game.supersharas.repl.co/static/'+ boardFigures[key].pic;
+		holder.src = '/static/'+ boardFigures[key].pic;
 		holder.setAttribute("class", 'figure ' + boardFigures[key].color);
 		holder.setAttribute("id", boardFigures[key].name);
-		if(boardFigures[key].location == 'homeHolder' || boardFigures[key].location == 'awayHolder') {
+		if(boardFigures[key].location == 'whiteHolder' || boardFigures[key].location == 'blackHolder') {
 			holder.style.height = height - (height / 100 * 53);
 			holder.style.width = height - (height / 100 * 53);
 		} else {
 			holder.style.height = height - (height / 100 * 20);
 			holder.style.width = height - (height / 100 * 20);
 		}
+		console.log('loc', boardFigures[key].location);
 		document.getElementById(boardFigures[key].location).appendChild(holder);
 	};
 }
@@ -170,9 +172,11 @@ window.addEventListener('mouseup', e => {
 	if (isDraging === true) {
 		if (onTheMove) {
       if(color == 'black'){
-        var move = {x: -Math.round((startx - e.x)/60), y: -Math.round((starty - e.y)/60)};
+        //var move = {x: -Math.round((startx - e.x)/60), y: -Math.round((starty - e.y)/60)};
+        var move = {x: -Math.round((startx - e.pageX)/60), y: -Math.round((starty - e.pageY)/60)};
       } else{
-        var move = {x: Math.round((startx - e.x)/60), y:Math.round((starty - e.y)/60)};
+        //var move = {x: Math.round((startx - e.x)/60), y:Math.round((starty - e.y)/60)};
+        var move = {x: Math.round((startx - e.pageX)/60), y: Math.round((starty - e.pageY)/60)};
       }
 			
       console.log(move);
@@ -190,13 +194,18 @@ function grab() {
     moving.forEach(function(move) {
       move.addEventListener('mousedown', e => {
         e.preventDefault();
-        startx = e.x;
-        starty = e.y;
+        console.log('e', e);
+        //startx = e.x;
+        //starty = e.y;
+        startx = e.pageX;
+        starty = e.pageY;
         isDraging = true;
         onTheMove = e.target;
         onTheMove.style.position = 'absolute';
-        onTheMove.style.left = e.clientX - (height/2.5);
-        onTheMove.style.top = e.clientY - (height/2.5);
+        //onTheMove.style.left = e.clientX - (height/2.5);
+        //onTheMove.style.top = e.clientY - (height/2.5);
+        onTheMove.style.left = e.pageX - (height/2.5);
+        onTheMove.style.top = e.pageY - (height/2.5);
       });
     });
   }
@@ -205,8 +214,8 @@ function grab() {
 window.addEventListener('mousemove', e => {
 	if (isDraging === true) {
 		e.preventDefault();
-		onTheMove.style.left = e.clientX - (height/2.5);
-		onTheMove.style.top = e.clientY - (height/2.5);
+		onTheMove.style.left = e.pageX - (height/2.5);
+		onTheMove.style.top = e.pageY - (height/2.5);
 	}
 });
 

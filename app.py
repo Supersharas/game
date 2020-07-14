@@ -64,11 +64,11 @@ def move():
             next_move = 'white'
           if content['move'] in state.position[content['figure']]['moves']:
             temp = state.position
-            temp[content['figure']]['location'] = content['move']
-            temp[content['figure']]['notMoved'] = False
             holder =  attac(content['move'], state.position)
             if holder:
-              temp[holder['figure']]['location'] = holder['location']
+              temp[holder['figure']]['location'] = holder['holder']
+            temp[content['figure']]['location'] = content['move']
+            temp[content['figure']]['notMoved'] = False
             new_position = calculate_moves(temp)
           next_state = State(game_id=state.game_id, move_number=state.move_number+1, move=next_move, position=new_position)
           State.insert(next_state)
@@ -117,6 +117,8 @@ def black(game):
   move_number = state.move_number
   player = state.games.player
   oponent = state.games.oponent
+  # ONLY FOR TESTING
+  session['userId'] = oponent.id
   db.session.close()
   return render_template('black.html', data=json.dumps(data), player=oponent, oponent=player, move = json.dumps(move), move_number = json.dumps(move_number))
 
@@ -125,6 +127,8 @@ def white(game):
   state = State.query.filter_by(game_id=game).order_by(State.move_number.desc()).first()
   data = state.position
   player = state.games.player
+  # ONLY FOR TESTING
+  session['userId'] = player.id
   move = state.move
   move_number = state.move_number
   oponent = state.games.oponent

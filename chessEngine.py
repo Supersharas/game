@@ -70,67 +70,69 @@ def save_king(position, key, move):
 def straight_move_test(position, key, x, y, enemy):
   for i in range(1, 7):
     if not ocupied(position, sanity(x+i, y)):
-      position[key].moves.append(sanity(x+1, y))
-    elif ocupied(position, sanity(x+i, y)) == enemy:
-      position[key].moves.append(sanity(x+1, y))
-    else: 
+      position[key]['moves'].append(sanity(x+i, y))
+    else:
+      if ocupied(position, sanity(x+i, y)) == enemy:
+        position[key]['moves'].append(sanity(x+i, y))
       break
   for i in range(1, 7):
     if not ocupied(position, sanity(x-i, y)):
-      position[key].moves.append(sanity(x-1, y))
-    elif ocupied(position, sanity(x-i, y)) == enemy:
-      position[key].moves.append(sanity(x-1, y))
-    else: 
+      position[key]['moves'].append(sanity(x-i, y))
+    else:
+      if ocupied(position, sanity(x-i, y)) == enemy:
+        position[key]['moves'].append(sanity(x-i, y))
       break
   for i in range(1, 7):
     if not ocupied(position, sanity(x, y+i)):
-      position[key].moves.append(sanity(x, y+i))
-    elif ocupied(position, sanity(x, y+i)) == enemy:
-      position[key].moves.append(sanity(x, y+i))
-    else: 
+      position[key]['moves'].append(sanity(x, y+i))
+    else:
+      if ocupied(position, sanity(x, y+i)) == enemy:
+        position[key]['moves'].append(sanity(x, y+i))
       break
   for i in range(1, 7):
     if not ocupied(position, sanity(x, y-i)):
-      position[key].moves.append(sanity(x, y-i))
-    elif ocupied(position, sanity(x, y-i)) == enemy:
-      position[key].moves.append(sanity(x, y-i))
-    else: 
+      position[key]['moves'].append(sanity(x, y-i))
+    else:
+      if ocupied(position, sanity(x, y-i)) == enemy:
+        position[key]['moves'].append(sanity(x, y-i))
       break
   return position
 
 def straight_move(position, key, x, y, enemy):
   for i in range(1, 7):
     if not ocupied(position, sanity(x+i, y)):
-      position = save_king(position, key, sanity(x+1, y))
-    elif ocupied(position, sanity(x+i, y)) == enemy:
-      position = save_king(position, key, sanity(x+1, y))
-    else: 
+      position = save_king(position, key, sanity(x+i, y))
+    else:
+      if ocupied(position, sanity(x+i, y)) == enemy:
+        position = save_king(position, key, sanity(x+i, y))
       break
   for i in range(1, 7):
     if not ocupied(position, sanity(x-i, y)):
-      position = save_king(position, key, sanity(x-1, y))
-    elif ocupied(position, sanity(x-i, y)) == enemy:
-      position = save_king(position, key, sanity(x-1, y))
-    else: 
+      position = save_king(position, key, sanity(x-i, y))
+    else:
+      if ocupied(position, sanity(x-i, y)) == enemy:
+        position = save_king(position, key, sanity(x-i, y))
       break
   for i in range(1, 7):
     if not ocupied(position, sanity(x, y+i)):
       position = save_king(position, key, sanity(x, y+i))
-    elif ocupied(position, sanity(x, y+i)) == enemy:
-      position = save_king(position, key, sanity(x, y+i))
     else:
+      if ocupied(position, sanity(x, y+i)) == enemy:
+        position = save_king(position, key, sanity(x, y+i))
       break
   for i in range(1, 7):
     if not ocupied(position, sanity(x, y-i)):
       position = save_king(position, key, sanity(x, y-i))
-    elif ocupied(position, sanity(x, y-i)) == enemy:
-      position = save_king(position, key, sanity(x, y-i))
-    else: 
+    else:
+      if ocupied(position, sanity(x, y-i)) == enemy:
+        position = save_king(position, key, sanity(x, y-i)) 
       break
   return position
 
 def calculate(position, color):
   for key in position:
+    if position[key]['location'] == 'whiteHolder' or  position[key]['location'] == 'blackHolder':
+      continue
     position[key]['moves'] = []
     x = int(position[key]['location'][0])
     y = int(position[key]['location'][1])
@@ -164,8 +166,10 @@ def calculate(position, color):
   position = check_king(position)
   return position
 
-def calculate_moves(position):
+def calculate_moves(position=start_position):
   for key in position:
+    if position[key]['location'] == 'whiteHolder' or  position[key]['location'] == 'blackHolder':
+      continue
     position[key]['moves'] = []
     x = int(position[key]['location'][0])
     y = int(position[key]['location'][1])

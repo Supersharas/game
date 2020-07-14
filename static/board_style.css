@@ -2,11 +2,11 @@ html {
   text-align: center;
 }
 
-#homeHolder {
-  text-align: left;
-}
-#awayHolder {
+.awayHolder {
   text-align: right;
+}
+.homeHolder {
+  text-align: left;
 }
 
 #homeTimer, #awayTimer {

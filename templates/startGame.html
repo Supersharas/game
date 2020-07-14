@@ -14,7 +14,7 @@
 <h1>old fashion game</h1>
 
 <a href="{{ url_for('offer') }}"><button>create chalange</button></a>
-<button onclick="refresh()">Refresh</button>
+<button onclick="startAsinc()">Refresh</button>
 
 <div id="challange">
   {% if my_game %}
@@ -39,6 +39,7 @@
 </div>
 
 <script>
+
   crazyTime = setInterval(refresh, 1000);
   function refresh(){
     fetch('/chess/lobby').then(response => response.json()).then(function(response){
@@ -56,6 +57,7 @@
   function startGame(){
     fetch('/game')
   }
+
   // let user = sessionStorage.getItem('userId');
   // window.onload = function(){
   //   console.log('bla bla bla');
