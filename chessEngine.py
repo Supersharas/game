@@ -1,4 +1,5 @@
 import copy
+import datetime
 
 start_position = {
   'WP8': {'name': 'WP8', 'color': 'white', 'location': '01', 'pic':'WP.png', 'notMoved': True},
@@ -142,7 +143,7 @@ def calculate(position, color):
         position[key]['moves'].append(sanity(x, y+1))
       if position[key]['notMoved'] and not ocupied(sanity(x, y+2)):
         position[key]['moves'].append(sanity(x, y+2))
-      if ocupied(position, x+1, y+1) == 'B':
+      if ocupied(position, sanity(x+1, y+1)) == 'B':
         position[key]['moves'].append(sanity(x+1, y+1))
       if ocupied(position, sanity(x-1, y+1)) == 'B':
         position[key]['moves'].append(sanity(x-1, y+1))
@@ -152,9 +153,9 @@ def calculate(position, color):
         position[key]['moves'].append(sanity(x, y-1))
       if position[key]['notMoved'] and not ocupied(position, sanity(x, y-2)):
         position[key]['moves'].append(sanity(x, y-2))
-      if ocupied(position, sanity(x+1, y-1)) == 'B':
+      if ocupied(position, sanity(x+1, y-1)) == 'W':
         position[key]['moves'].append(sanity(x+1, y-1))
-      if ocupied(position, sanity(x-1, y-1)) == 'B':
+      if ocupied(position, sanity(x-1, y-1)) == 'W':
         position[key]['moves'].append(sanity(x-1, y-1))
     # WHITE ROOK
     if position[key]['name'][1] == 'R' and position[key]['name'][0] == 'W':
@@ -190,9 +191,9 @@ def calculate_moves(position=start_position):
         position = save_king(position, key, sanity(x, y-1))
       if position[key]['notMoved'] and not ocupied(position, sanity(x, y-2)):
         position = save_king(position, key, sanity(x, y-2))
-      if ocupied(position, sanity(x+1, y-1)) == 'B':
+      if ocupied(position, sanity(x+1, y-1)) == 'W':
         position = save_king(position, key, sanity(x+1, y-1))
-      if ocupied(position, sanity(x-1, y-1)) == 'B':
+      if ocupied(position, sanity(x-1, y-1)) == 'W':
         position = save_king(position, key, sanity(x-1, y-1))
     # WHITE ROOK
     if position[key]['name'][1] == 'R' and position[key]['name'][0] == 'W':
@@ -212,3 +213,12 @@ def attac(move, position):
         return {'figure': position[key]['name'], 'holder':'whiteHolder'}
       else:
         return {'figure': position[key]['name'], 'holder':'blackHolder'}
+
+def time_master(time, white, black, move):
+  now = datetime.datetime.utcnow()
+  diff = now - time
+  if move == 'white':
+    white = diff.total_seconds() - black
+  else:
+    black = diff.total_seconds() - white
+  return {'white': white, 'black': black}

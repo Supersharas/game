@@ -123,11 +123,9 @@
       </div>
     </div>
   <div class player>{{player.name}}  {{player.id}}</div>
-  <div> FOR TESTING ONLY MOVE_NUMBER: {{move_number}}</div>
+  <div> FOR TESTING ONLY MOVE_NUMBER: {{move_number}} TIME: {{time}}</div>
     <script type="text/javascript">
-      var boardFigures = {{data|safe}};
-      var move = {{move|safe}};
-      var moveNumber = {{move_number|safe}}
+      var data = {{data|safe}};
       var color ='white';
     </script>
   <script src="{{ url_for('static', filename='white.js') }}"></script> 

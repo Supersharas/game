@@ -5,7 +5,7 @@ import sys
 import json
 from markupsafe import escape
 
-from chessEngine import calculate_moves, attac
+from chessEngine import calculate_moves, attac, time_master
 
 from models import setup_db, Game, Player, State, Offer, db
 
@@ -53,16 +53,18 @@ def start_game(offer):
 @app.route('/chess/move', methods=['GET', 'POST'])
 def move():
   if request.method == 'POST':
-    content = request.json
-    if content['figure']:
+    content = json.loads(request.data)
+    figure = content.get('figure', None)
+    move_number = content.get('moveNumber', None)
+    if figure:
       if session['userId']:
         state = State.query.join(Game).filter(or_(Game.player_one==session['userId'], Game.player_two==session['userId'])).order_by(State.move_number.desc()).first()
-        if state.move == state.position[content['figure']]['color']:
+        if state.move == state.position[figure]['color']:
           if state.move == 'white':
             next_move = 'black'
           else:
             next_move = 'white'
-          if content['move'] in state.position[content['figure']]['moves']:
+          if content['move'] in state.position[figure]['moves']:
             temp = state.position
             holder =  attac(content['move'], state.position)
             if holder:
@@ -70,23 +72,25 @@ def move():
             temp[content['figure']]['location'] = content['move']
             temp[content['figure']]['notMoved'] = False
             new_position = calculate_moves(temp)
-          next_state = State(game_id=state.game_id, move_number=state.move_number+1, move=next_move, position=new_position)
+            time = time_master(state.date, state.white_timer, state.black_timer, state.move)
+          next_state = State(game_id=state.game_id, move_number=state.move_number+1, move=next_move, position=new_position, 
+            white_timer=time['white'], black_timer=time['black'])
           State.insert(next_state)
           data = next_state.format()
           db.session.close()
           return json.dumps(data)
         else:
           return json.dumps({'not': 'your move'})
-    if content['moveNumber']:
+    if move_number:
       if session['userId']:
-        state = State.query.join(Game).filter(or_(Game.player_one==session['userId'], Game.player_two==session['userId'])).first()
+        state = State.query.join(Game).filter(or_(Game.player_one==session['userId'], Game.player_two==session['userId'])).order_by(State.move_number.desc()).first()
         new_state = state.format()
-        #if content['moveNumber'] < state.move_number:
         db.session.close()
-        return json.dumps(new_state)
-      else:
+        if move_number < new_state['move_number']:
+          return json.dumps(new_state)
+        else:
         #return json.dumps({'kas': 'per huiniene'})
-        return 'uzpisot dar labiau'
+          return json.dumps(None)
   else:
     return json.dumps({'kas': 'per huiniene'})
 
@@ -106,34 +110,34 @@ def test():
   move = current_state.move
   player1 = current_state.games.player
   oponent1 = current_state.games.oponent
+  whiteTimer = current_state.white_timer
+  blackTimer = current_state.black_timer
   db.session.close()
-  return render_template('white.html', data=json.dumps(position), player=player1, oponent=oponent1, move = json.dumps(move), game=game, move_number = json.dumps(1))
+  return render_template('white.html', data=json.dumps(position), player=player1, oponent=oponent1, move = json.dumps(move), 
+    game=game, move_number = json.dumps(1))
   
 @app.route('/chess/black/<int:game>')
 def black(game):
   state = State.query.filter_by(game_id=game).order_by(State.move_number.desc()).first()
-  data = state.position
-  move = state.move
-  move_number = state.move_number
+  data = state.format()
   player = state.games.player
   oponent = state.games.oponent
   # ONLY FOR TESTING
   session['userId'] = oponent.id
   db.session.close()
-  return render_template('black.html', data=json.dumps(data), player=oponent, oponent=player, move = json.dumps(move), move_number = json.dumps(move_number))
+  return render_template('black.html', data=json.dumps(data), player=oponent, oponent=player,)
 
 @app.route('/chess/white/<int:game>')
 def white(game):
   state = State.query.filter_by(game_id=game).order_by(State.move_number.desc()).first()
-  data = state.position
+  data = state.format()
   player = state.games.player
   # ONLY FOR TESTING
   session['userId'] = player.id
-  move = state.move
-  move_number = state.move_number
   oponent = state.games.oponent
+  #time_test = time_master(state.date, state.white_timer, state.black_timer, move)
   db.session.close()
-  return render_template('white.html', data=json.dumps(data), player=player, oponent=oponent, move = json.dumps(move), move_number = json.dumps(move_number))
+  return render_template('white.html', data=json.dumps(data), player=player, oponent=oponent,)#, time=time_test)
 
 @app.route('/chess')
 def chess():

@@ -1,21 +1,29 @@
 var height = document.getElementById('00').clientHeight;
 var homeMove = true;
 console.log('color', color);
-console.log('move', move);
-console.log(color == move);
-if(color == move){
-  homeMove = true;
-} else {
-  homeMove = false;
-}
+console.log('move', data.move);
+console.log(color == data.move);
+console.log(data);
+
 var isDraging = false;
-var homeTimer = document.getElementById('homeTimer');
-var awayTimer = document.getElementById('awayTimer');
-var clock = {
-	homeTime : '00:00',
-	awayTime : '00:00'
+
+function startFun(){
+	if(color == data.move){
+	  homeMove = true;
+	} else {
+	  homeMove = false;
+	}
+	populate();
+	grab();
+	time();
+	start_getNews();
 }
 
+startFun();
+
+function start_getNews() {
+    getNews = setInterval(refresh, 1000);
+}
 
 function refresh(){
   fetch('/chess/move',{
@@ -24,25 +32,17 @@ function refresh(){
       'Content-Type': 'application/json'
       // 'Content-Type': 'application/x-www-form-urlencoded',
     },
-    body: JSON.stringify({moveNumber: parseInt(moveNumber)})
+    body: JSON.stringify({moveNumber: parseInt(data.move_number)})
   }).then(response => response.json()).then(function(response){
     console.log('response', response);
+    if (response){
+    	data = response;
+      clearBoard();
+      startFun();
+    }
   }).catch(function(err){
     console.log('err', err);
   })
-}
-
-function start_getNews() {
-  stop_getNews();
-  if(!homeMove){
-    getNews = setInterval(refresh, 1000);
-  }
-}
-
-function stop_getNews() {
-	if(homeMove) {
-		clearInterval(getNews);
-	}
 }
 
 var crazyTime = false;
@@ -71,8 +71,43 @@ function timer(someTime, someTimer, other) {
 	other.style.backgroundColor = "white";
 }
 
+var homeTimer = document.getElementById('homeTimer');
+var awayTimer = document.getElementById('awayTimer');
+var clock = {
+	homeTime : '00:00',
+	awayTime : '00:00'
+}
+
 function time() {
 	stop();
+
+	whiteSec = data.white_time % 60
+	whiteMin = (data.white_time - whiteSec) / 60
+	let wminutes = parseInt(whiteMin);
+	let wseconds = parseInt(whiteSec);
+	if (wminutes.length == 1) {
+		wminutes = '0' + wminutes;
+	}
+	if (wseconds.length == 1) {
+		wseconds = '0' + wseconds;
+	}
+	blackSec = data.black_time % 60
+	blackMin = (data.black_time - blackSec) / 60
+	let bminutes = parseInt(blackMin);
+	let bseconds = parseInt(blackSec);
+	if (bminutes.length == 1) {
+		bminutes = '0' + bminutes;
+	}
+	if (bseconds.length == 1) {
+		bseconds = '0' + bseconds;
+	}
+	if(data.color == 'white'){
+		clock.homeTime = wminutes + ':' + wseconds
+		clock.awayTime = bminutes + ':' + bseconds
+	} else {
+		clock.homeTime = bminutes + ':' + bseconds
+		clock.awayTime = wminutes + ':' + wseconds
+	}
 	if(homeMove){
 		crazyTime = setInterval(timer, 1000, 'homeTime', homeTimer, awayTimer);
 	} else {
@@ -87,9 +122,10 @@ function stop() {
 }
 
 // GET  
-console.log(boardFigures);
+console.log(data.boardFigures);
 
 function populate() {
+	var boardFigures = data.position
   console.log('populating');
   document.getElementById('awayCheck').style.visibility = 'hidden';
   document.getElementById('homeCheck').style.visibility = 'hidden';
@@ -108,7 +144,7 @@ function populate() {
 			holder.style.height = height - (height / 100 * 20);
 			holder.style.width = height - (height / 100 * 20);
 		}
-		console.log('loc', boardFigures[key].location);
+		//console.log('loc', boardFigures[key].location);
 		document.getElementById(boardFigures[key].location).appendChild(holder);
 	};
 }
@@ -134,7 +170,7 @@ function getBack() {
 }
 
 function ifAllowed(fig, move){
-  let figure = boardFigures[fig];
+  let figure = data.position[fig];
 	var posx = parseInt(figure.location[0]);
 	var posy = parseInt(figure.location[1]);
 	var desx = posx + move.x;
@@ -146,7 +182,6 @@ function ifAllowed(fig, move){
     onTheMove.style.left = '0';
     onTheMove.style.top = '0';
     homeMove = false;
-    time()
 		console.log('HITT');
     fetch('/chess/move',{
       method: 'POST',
@@ -157,9 +192,10 @@ function ifAllowed(fig, move){
       body: JSON.stringify({'figure': figure.name, 'move': destination})
     }).then(response => response.json()).then(function(response){
       console.log('response', response);
-      boardFigures = response.position;
-      clearBoard()
-      populate()
+      data = response;
+      moveNumber = response.move_number;
+      clearBoard();
+      startFun();
     }).catch(function(err){
       console.log('err', err);
     })
@@ -171,26 +207,22 @@ function ifAllowed(fig, move){
 window.addEventListener('mouseup', e => {
 	if (isDraging === true) {
 		if (onTheMove) {
-      if(color == 'black'){
-        //var move = {x: -Math.round((startx - e.x)/60), y: -Math.round((starty - e.y)/60)};
-        var move = {x: -Math.round((startx - e.pageX)/60), y: -Math.round((starty - e.pageY)/60)};
-      } else{
-        //var move = {x: Math.round((startx - e.x)/60), y:Math.round((starty - e.y)/60)};
-        var move = {x: Math.round((startx - e.pageX)/60), y: Math.round((starty - e.pageY)/60)};
-      }
-			
-      console.log(move);
-			ifAllowed(onTheMove.id, move);
+	      if(color == 'black'){
+	        //var move = {x: -Math.round((startx - e.x)/60), y: -Math.round((starty - e.y)/60)};
+	        var move = {x: -Math.round((startx - e.pageX)/60), y: -Math.round((starty - e.pageY)/60)};
+	      } else{
+	        //var move = {x: Math.round((startx - e.x)/60), y:Math.round((starty - e.y)/60)};
+	        var move = {x: Math.round((startx - e.pageX)/60), y: Math.round((starty - e.pageY)/60)};
+	      }
+		ifAllowed(onTheMove.id, move);
 		}
 		isDraging = false;
 	}
 });
 
-populate();
-
 function grab() {
-  if(color == move) {
-    var moving = document.querySelectorAll('.figure.' + move);
+  if(color == data.move) {
+    var moving = document.querySelectorAll('.figure.' + data.move);
     moving.forEach(function(move) {
       move.addEventListener('mousedown', e => {
         e.preventDefault();
@@ -219,5 +251,3 @@ window.addEventListener('mousemove', e => {
 	}
 });
 
-grab();
-time();

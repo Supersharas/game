@@ -42,11 +42,14 @@ tags = db.Table('tags',
 class State(db.Model):
   __tablename__ = 'states'
   id = db.Column(db.Integer, primary_key=True)
-  game_id = db.Column(db.Integer, db.ForeignKey('game.id',  onupdate="CASCADE", ondelete="CASCADE"))
+  date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+  game_id = db.Column(db.Integer, db.ForeignKey('games.id',  onupdate="CASCADE", ondelete="CASCADE"))
   games = db.relationship('Game', backref=db.backref('state', lazy=True))
   move_number = db.Column(db.Integer, nullable=False)
   move = db.Column(db.String(20), nullable=False)
   position = db.Column(db.JSON, nullable=False)
+  black_timer = db.Column(db.Integer, nullable=False, default=0)
+  white_timer = db.Column(db.Integer, nullable=False, default=0)
 
   def insert(self):
     db.session.add(self)
@@ -62,17 +65,21 @@ class State(db.Model):
   def format(self):
     return {
       'id': self.id,
+      #'date': self.date,
       'game_id': self.game_id,
       'move_number': self.move_number,
       'position': self.position,
       #'game': self.games,
-      'move': self.move
+      'move': self.move,
+      'white_timer': self.white_timer,
+      'black_timer': self.black_timer
     }
 
 
 class Game(db.Model):
-  __teblename__ = 'games'
+  __tablename__ = 'games'
   id = db.Column(db.Integer, primary_key=True)
+  date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
   player_one = db.Column(db.Integer, db.ForeignKey('players.id',  onupdate="CASCADE", ondelete="CASCADE"))
   player_two = db.Column(db.Integer, db.ForeignKey('players.id',  onupdate="CASCADE", ondelete="CASCADE"))
   player = db.relationship('Player', foreign_keys=[player_one],  backref=db.backref('game', lazy=True))
@@ -92,13 +99,15 @@ class Game(db.Model):
   def format(self):
     return {
       'id': self.id,
+      'date': self.date,
       'playerOne': self.player_one,
       'playerTwo': self.player_two
     }
 
 class Offer(db.Model):
-  __teblename__ = 'offers'
+  __tablename__ = 'offers'
   id = db.Column(db.Integer, primary_key=True)
+  date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
   player_one = db.Column(db.Integer, db.ForeignKey('players.id',  onupdate="CASCADE", ondelete="CASCADE"))
   player = db.relationship('Player', foreign_keys=[player_one],  backref=db.backref('offer', lazy=True))
 
@@ -116,6 +125,7 @@ class Offer(db.Model):
   def format(self):
     return {
       'id': self.id,
+      'date': self.date,
       'playerOne': self.player_one
     }
 

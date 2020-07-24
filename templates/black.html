@@ -121,9 +121,7 @@
     <div class player>{{player.name}}  {{player.id}}</div>
     <div> FOR TESTING ONLY MOVE_NUMBER: {{move_number}}</div>
     <script type="text/javascript">
-      var boardFigures = {{data|safe}};
-      var move = {{move|safe}};
-      var moveNumber = {{move_number|safe}}
+      var data = {{data|safe}};
       var color ='black';
     </script>
     <script src="{{ url_for('static', filename='white.js') }}"></script>
