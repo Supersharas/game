@@ -1,5 +1,13 @@
 var height = document.getElementById('00').clientHeight;
 var homeMove = true;
+
+var homeTimer = document.getElementById('homeTimer');
+var awayTimer = document.getElementById('awayTimer');
+var clock = {
+	homeTime : '00:00',
+	awayTime : '00:00'
+}
+
 console.log('color', color);
 console.log('move', data.move);
 console.log(color == data.move);
@@ -8,15 +16,47 @@ console.log(data);
 var isDraging = false;
 
 function startFun(){
+  var homeCheck;
+  var awayCheck;
 	if(color == data.move){
 	  homeMove = true;
 	} else {
 	  homeMove = false;
 	}
+  console.log('starting fun');
 	populate();
 	grab();
 	time();
-	start_getNews();
+  if(color == 'white'){
+    homeCheck = data.position.WKing.check;
+    homeOver = data.position.WKing.surrender;
+    awayCheck = data.position.BKing.check;
+    awayOver = data.position.BKing.surrender;
+  } else {
+    awayCheck = data.position.WKing.check;
+    awayOver = data.position.WKing.surrender;
+    homeCheck = data.position.BKing.check;
+    homeOver = data.position.BKing.surrender;
+  }
+  if(awayCheck){
+    document.getElementById('awayCheck').style.visibility = 'visible';
+  } else{
+    document.getElementById('awayCheck').style.visibility = 'hidden';
+  } 
+  if (homeCheck) {
+    document.getElementById('homeCheck').style.visibility = 'visible';
+  } else {
+    document.getElementById('homeCheck').style.visibility = 'hidden';
+  }
+  if(awayOver){
+    document.getElementById('awayCheck').style.visibility = 'visible';
+    document.getElementById('awayCheck').innerText = 'GAME OVER';
+  }
+  if (homeOver) {
+    document.getElementById('homeCheck').style.visibility = 'visible';
+    document.getElementById('homeCheck').innerText = 'GAME OVER';
+  }
+	//start_getNews();
 }
 
 startFun();
@@ -45,7 +85,7 @@ function refresh(){
   })
 }
 
-var crazyTime = false;
+var crazyTime;
 homeTimer.innerText = clock.homeTime;
 awayTimer.innerText = clock.awayTime;
 
@@ -71,58 +111,53 @@ function timer(someTime, someTimer, other) {
 	other.style.backgroundColor = "white";
 }
 
-var homeTimer = document.getElementById('homeTimer');
-var awayTimer = document.getElementById('awayTimer');
-var clock = {
-	homeTime : '00:00',
-	awayTime : '00:00'
-}
+//console.log('outside crazyTime', crazyTime);
 
 function time() {
-	stop();
+  
+	//stop();
 
-	whiteSec = data.white_time % 60
-	whiteMin = (data.white_time - whiteSec) / 60
-	let wminutes = parseInt(whiteMin);
-	let wseconds = parseInt(whiteSec);
+	whiteSec = data.white_timer % 60
+	whiteMin = (data.white_timer - whiteSec) / 60
+	let wminutes = whiteMin.toString();
+	let wseconds = whiteSec.toString();
 	if (wminutes.length == 1) {
 		wminutes = '0' + wminutes;
 	}
 	if (wseconds.length == 1) {
 		wseconds = '0' + wseconds;
 	}
-	blackSec = data.black_time % 60
-	blackMin = (data.black_time - blackSec) / 60
-	let bminutes = parseInt(blackMin);
-	let bseconds = parseInt(blackSec);
+	blackSec = data.black_timer % 60
+	blackMin = (data.black_timer - blackSec) / 60
+	let bminutes = blackMin.toString();
+	let bseconds = blackSec.toString();
 	if (bminutes.length == 1) {
 		bminutes = '0' + bminutes;
 	}
 	if (bseconds.length == 1) {
 		bseconds = '0' + bseconds;
 	}
-	if(data.color == 'white'){
+	if(color == 'white'){
 		clock.homeTime = wminutes + ':' + wseconds
 		clock.awayTime = bminutes + ':' + bseconds
 	} else {
 		clock.homeTime = bminutes + ':' + bseconds
 		clock.awayTime = wminutes + ':' + wseconds
 	}
-	if(homeMove){
-		crazyTime = setInterval(timer, 1000, 'homeTime', homeTimer, awayTimer);
-	} else {
-		crazyTime = setInterval(timer, 1000, 'awayTime', awayTimer, homeTimer);
-	}
-}
-
-function stop() {
-	if(crazyTime) {
+  console.log('this', this);
+  console.log('crazyTime', typeof crazyTime);
+	if(typeof crazyTime !== 'undefined') {
 		clearInterval(crazyTime);
 	}
+	if(homeMove){
+		crazyTime = setInterval(timer, 1000, 'homeTime', homeTimer, awayTimer);
+    console.log('home crazyTime', typeof crazyTime);
+	} else {
+		crazyTime = setInterval(timer, 1000, 'awayTime', awayTimer, homeTimer);
+    console.log('away crazyTime', typeof crazyTime);
+	}
 }
-
 // GET  
-console.log(data.boardFigures);
 
 function populate() {
 	var boardFigures = data.position
@@ -183,6 +218,7 @@ function ifAllowed(fig, move){
     onTheMove.style.top = '0';
     homeMove = false;
 		console.log('HITT');
+    //console.log('crazyTime before fetch', crazyTime);
     fetch('/chess/move',{
       method: 'POST',
       headers: {
@@ -192,6 +228,7 @@ function ifAllowed(fig, move){
       body: JSON.stringify({'figure': figure.name, 'move': destination})
     }).then(response => response.json()).then(function(response){
       console.log('response', response);
+      //console.log('crazyTime after fetch', crazyTime);
       data = response;
       moveNumber = response.move_number;
       clearBoard();

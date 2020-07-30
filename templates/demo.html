@@ -1,0 +1,122 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='board_style.css') }}">
+  </head>
+  <body>
+    <h1>Game</h1>
+    <div id='board'>
+      <div id='top'>
+        <div id='awayTimer'></div>
+        <div id='awayHolder'>
+          <div id='awayCheck'>CHECK</div>
+        </div>       
+      </div>
+      <table id='boardtb'>
+        <tbody >
+          <tr id='tr7'>
+            <th class='coors'>8</th>
+            <td id='77' class='dark'></td>
+            <td id='67'></td>
+            <td id='57' class='dark'></td>
+            <td id='47'></td>
+            <td id='37' class='dark'></td>
+            <td id='27'></td>
+            <td id='17' class='dark'></td>
+            <td id='07'></td>
+          </tr>
+          <tr id='tr6'>
+            <th class='coors'>7</th>
+            <td id='76'></td>
+            <td id='66' class='dark'></td>
+            <td id='56'></td>
+            <td id='46' class='dark'></td>
+            <td id='36'></td>
+            <td id='26' class='dark'></td>
+            <td id='16'></td>
+            <td id='06' class='dark'></td>
+          </tr>
+          <tr id='tr5'>
+            <th class='coors'>6</th>
+            <td id='75'  class='dark'></td>
+            <td id='65'></td>
+            <td id='55' class='dark'></td>
+            <td id='45'></td>
+            <td id='35' class='dark'></td>
+            <td id='25'></td>
+            <td id='15' class='dark'></td>
+            <td id='05'></td>
+          </tr>
+          <tr id='tr4'>
+            <th class='coors'>5</th>
+            <td id='74'></td>
+            <td id='64' class='dark'></td>
+            <td id='54'></td>
+            <td id='44' class='dark'></td>
+            <td id='34'></td>
+            <td id='24' class='dark'></td>
+            <td id='14'></td>
+            <td id='04' class='dark'></td>
+          </tr>
+          <tr id='tr3'>
+            <th class='coors'>4</th>
+            <td id='73'  class='dark'></td>
+            <td id='63'></td>
+            <td id='53' class='dark'></td>
+            <td id='43'></td>
+            <td id='33' class='dark'></td>
+            <td id='23'></td>
+            <td id='13' class='dark'></td>
+            <td id='03'></td>
+          </tr>
+          <tr id='tr2'>
+            <th class='coors'>3</th>
+            <td id='72'></td>
+            <td id='62' class='dark'></td>
+            <td id='52'></td>
+            <td id='42' class='dark'></td>
+            <td id='32'></td>
+            <td id='22' class='dark'></td>
+            <td id='12'></td>
+            <td id='02' class='dark'></td>
+          </tr>
+          <tr id='tr1'>
+            <th class='coors'>2</th>
+            <td id='71'  class='dark'></td>
+            <td id='61'></td>
+            <td id='51' class='dark'></td>
+            <td id='41'></td>
+            <td id='31' class='dark'></td>
+            <td id='21'></td>
+            <td id='11' class='dark'></td>
+            <td id='01'></td>
+          </tr>
+          <tr id='tr0'>
+            <th class='coors'>1</th>
+            <td id='70'></td>
+            <td id='60' class='dark'></td>
+            <td id='50'></td>
+            <td id='40' class='dark'></td>
+            <td id='30'></td>
+            <td id='20' class='dark'></td>
+            <td id='10'></td>
+            <td id='00' class='dark'></td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <th class='coors'>/</th>
+            <th class='coors'>A</th><th class='coors'>B</th><th class='coors'>C</th><th class='coors'>D</th>
+            <th class='coors'>E</th><th class='coors'>F</th><th class='coors'>G</th><th class='coors'>H</th>
+          </tr>
+        </tfoot>
+      </table>
+      <div id='botom'>
+        <div id='homeTimer'></div>
+        <div id='homeHolder'>
+          <div id='homeCheck'>CHECK</div>
+        </div>
+      </div>
+    </div>
+  <script src="{{ url_for('static', filename='board.js') }}"></script> 
+  </body>
+</html>

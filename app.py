@@ -18,7 +18,11 @@ setup_db(app)
 
 @app.route('/')
 def hello_world():
-    return 'Hello, World!'
+    return render_template('testStartPage.html')
+
+@app.route('/jsdemo')
+def jsdemo():
+  return render_template('demo.html')
 
 
 @app.route('/startGame/<int:offer>')
@@ -69,6 +73,7 @@ def move():
             holder =  attac(content['move'], state.position)
             if holder:
               temp[holder['figure']]['location'] = holder['holder']
+              temp[holder['figure']]['moves'] = []
             temp[content['figure']]['location'] = content['move']
             temp[content['figure']]['notMoved'] = False
             new_position = calculate_moves(temp)
@@ -106,15 +111,11 @@ def test():
   game = new_game.id
   current_state = State(game_id=new_game.id, move_number=1,move='white',position=calculate_moves())
   State.insert(current_state)
-  position = current_state.position
-  move = current_state.move
   player1 = current_state.games.player
   oponent1 = current_state.games.oponent
-  whiteTimer = current_state.white_timer
-  blackTimer = current_state.black_timer
+  data = current_state.format()
   db.session.close()
-  return render_template('white.html', data=json.dumps(position), player=player1, oponent=oponent1, move = json.dumps(move), 
-    game=game, move_number = json.dumps(1))
+  return render_template('white.html', data=json.dumps(data), player=player1, oponent=oponent1, game=game)
   
 @app.route('/chess/black/<int:game>')
 def black(game):

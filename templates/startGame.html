@@ -40,7 +40,7 @@
 
 <script>
 
-  crazyTime = setInterval(refresh, 1000);
+  //razyTime = setInterval(refresh, 1000);
   function refresh(){
     fetch('/chess/lobby').then(response => response.json()).then(function(response){
       if(response.game.id){
@@ -53,10 +53,10 @@
       console.log('err', err);
     })
   }
-  window.onload = crazyTime();
-  function startGame(){
-    fetch('/game')
-  }
+  // window.onload = crazyTime();
+  // function startGame(){
+  //   fetch('/game')
+  // }
 
   // let user = sessionStorage.getItem('userId');
   // window.onload = function(){

@@ -35,6 +35,8 @@ function timer(someTime, someTimer, other) {
 }
 
 function time() {
+  console.log('this', this);
+  console.log('crazyTime', crazyTime);
 	stop();
 	if(homeMove){
 		crazyTime = setInterval(timer, 1000, 'homeTime', homeTimer, awayTimer);

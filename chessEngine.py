@@ -48,24 +48,107 @@ def ocupied(position, loc):
     return False
   return 'Not'
 
+def save_castling(position, key, move, key2, move2):
+  position2 = copy.deepcopy(position)
+  position2[key]['location'] = move
+  position2[key2]['location'] = move2
+  color = position2[key]['name'][0]
+  testdict = calculate(position2, color)
+  if color == 'W' and (testdict['WKing']['check'] == False):
+    return True
+  elif color == 'B' and (testdict['BKing']['check'] == False):
+    return True
+  return False
+
+def castling(position):
+  if not position['WKing']['check']:
+    if position['WKing']['notMoved']:
+      if position['WR1']['notMoved']:
+        # 10 20 30
+        long = True
+        for key in position:
+          if key['location'] == '10' or key['location'] == '20' or key['location']  == '30':
+            long = False
+            break
+        if long and save_castling(position, 'WKing', '20', 'WR1' , '30'):
+          position['WKing']['long'] = True
+      if position['WR2']['notMoved']:
+        # 50 60
+        short = True
+        for key in position:
+          if key['location'] == '50' or key['location'] == '60':
+            short = False
+            break
+        if short and save_castling(position, 'WKing', '60', 'WR2' , '50'):
+          position['WKing']['short'] = True
+  if not position['BKing']['check']:
+    if position['BKing']['notMoved']:
+      if position['BR1']['notMoved']:
+        # 17 27 37
+        long = True
+        for key in position:
+          if key['location'] == '17' or key['location'] == '27' or key['location']  == '37':
+            long = False
+            break
+        if long and save_castling(position, 'BKing', '27', 'BR1' , '37'):
+          position['BKing']['long'] = True
+      if position['BR2']['notMoved']:
+        # 57 67
+        short = True
+        for key in position:
+          if key['location'] == '57' or key['location'] == '67':
+            short = False
+            break
+        if short and save_castling(position, 'BKing', '67', 'WR2' , '57'):
+          position['BKing']['short'] = True
+  return position
+          
+
+def game_over(position):
+  black_surrender = True
+  white_surrender = True
+  for key in position:
+    if position[key]['name'][0] == 'W':
+      if position[key]['moves'] != []:
+        white_surrender = False
+    if position[key]['name'][0] == 'B':
+      if position[key]['moves'] != []:
+        black_surrender = False
+  if position['WKing']['check'] and white_surrender:
+    position['WKing']['surrender'] = True;
+  if position['BKing']['check'] and black_surrender:
+    position['BKing']['surrender'] = True;
+  return position
+    
 
 def check_king(position):
   white_state = position['WKing']['location']
   black_state = position['BKing']['location']
   for key in position:
-    if position[key]['name'][0] == 'W' and black_state in position[key]['location']:
-      position['BKing']['check'] == True
-  for key in position:
-    if position[key]['name'][0] == 'B' and black_state in position[key]['location']:
-      position['WKing']['check'] == True
+    if position[key]['name'][0] == 'W' and black_state in position[key]['moves']:
+      position['BKing']['check'] = True
+    elif position[key]['name'][0] == 'B' and white_state in position[key]['moves']:
+      position['WKing']['check'] = True
   return position
 
 def save_king(position, key, move):
   position2 = copy.deepcopy(position)
-  position2[key]['moves'].append(move)
-  testdict = calculate(position2, 'W')
-  if not testdict['WKing']['check']:
+  holder =  attac(move, position2)
+  if holder:
+    position[key]['info'].append(str(holder))
+    position2[holder['figure']]['location'] = holder['holder']
+    position2[holder['figure']]['moves'] = []
+  position2[key]['location'] = move
+  color = position2[key]['name'][0]
+  testdict = calculate(position2, color)
+  position[key]['info'].append(str(key))
+  position[key]['info'].append(str(move))
+  if color == 'W' and (testdict['WKing']['check'] == False):
     position[key]['moves'].append(move)
+    position[key]['info'].append('not White check')
+  elif color == 'B' and (testdict['BKing']['check'] == False):
+    position[key]['moves'].append(move)
+    position[key]['info'].append('not Black check')
   return position
 
 def straight_move_test(position, key, x, y, enemy):
@@ -130,81 +213,319 @@ def straight_move(position, key, x, y, enemy):
       break
   return position
 
-def calculate(position, color):
-  for key in position:
-    if position[key]['location'] == 'whiteHolder' or  position[key]['location'] == 'blackHolder':
-      continue
-    position[key]['moves'] = []
-    x = int(position[key]['location'][0])
-    y = int(position[key]['location'][1])
-    # WHITE POWN
-    if position[key]['name'][1] == 'P' and position[key]['name'][0] == 'W' and position[key]['name'][0] != color:
-      if not ocupied(position, sanity(x, y+1)):
-        position[key]['moves'].append(sanity(x, y+1))
-      if position[key]['notMoved'] and not ocupied(sanity(x, y+2)):
-        position[key]['moves'].append(sanity(x, y+2))
-      if ocupied(position, sanity(x+1, y+1)) == 'B':
-        position[key]['moves'].append(sanity(x+1, y+1))
-      if ocupied(position, sanity(x-1, y+1)) == 'B':
-        position[key]['moves'].append(sanity(x-1, y+1))
-    # BLACK POWN
-    if position[key]['name'][1] == 'P' and position[key]['name'][0] == 'B' and position[key]['name'][0] != color:
-      if not ocupied(position, sanity(x, y-1)):
-        position[key]['moves'].append(sanity(x, y-1))
-      if position[key]['notMoved'] and not ocupied(position, sanity(x, y-2)):
-        position[key]['moves'].append(sanity(x, y-2))
-      if ocupied(position, sanity(x+1, y-1)) == 'W':
-        position[key]['moves'].append(sanity(x+1, y-1))
-      if ocupied(position, sanity(x-1, y-1)) == 'W':
-        position[key]['moves'].append(sanity(x-1, y-1))
-    # WHITE ROOK
-    if position[key]['name'][1] == 'R' and position[key]['name'][0] == 'W':
-      position = straight_move_test(position, key, x, y, 'B') 
-    # BLACK ROOK
-    if position[key]['name'][1] == 'R' and position[key]['name'][0] == 'B':
-      position = straight_move_test(position, key, x, y, 'W')
+def incline_move_test(position, key, x, y, enemy):
+  for i in range(1, 7):
+    if not ocupied(position, sanity(x+i, y+i)):
+      position[key]['moves'].append(sanity(x+i, y+i))
+    else:
+      if ocupied(position, sanity(x+i, y+i)) == enemy:
+        position[key]['moves'].append(sanity(x+i, y+i))
+      break
+  for i in range(1, 7):
+    if not ocupied(position, sanity(x+i, y-i)):
+      position[key]['moves'].append(sanity(x+i, y-i))
+    else:
+      if ocupied(position, sanity(x+i, y-i)) == enemy:
+        position[key]['moves'].append(sanity(x+i, y-i))
+      break
+  for i in range(1, 7):
+    if not ocupied(position, sanity(x-i, y-i)):
+      position[key]['moves'].append(sanity(x-i, y-i))
+    else:
+      if ocupied(position, sanity(x-i, y-i)) == enemy:
+        position[key]['moves'].append(sanity(x-i, y-i))
+      break
+  for i in range(1, 7):
+    if not ocupied(position, sanity(x-i, y+i)):
+      position[key]['moves'].append(sanity(x-i, y+i))
+    else:
+      if ocupied(position, sanity(x-i, y+i)) == enemy:
+        position[key]['moves'].append(sanity(x-i, y+i))
+      break
+  return position
 
+def incline_move(position, key, x, y, enemy):
+  for i in range(1, 7):
+    if not ocupied(position, sanity(x+i, y+i)):
+      position = save_king(position, key, sanity(x+i, y+i))
+    else:
+      if ocupied(position, sanity(x+i, y+i)) == enemy:
+        position = save_king(position, key, sanity(x+i, y+i))
+      break
+  for i in range(1, 7):
+    if not ocupied(position, sanity(x+i, y-i)):
+      position = save_king(position, key, sanity(x+i, y-i))
+    else:
+      if ocupied(position, sanity(x+i, y-i)) == enemy:
+        position = save_king(position, key, sanity(x+i, y-i))
+      break
+  for i in range(1, 7):
+    if not ocupied(position, sanity(x-i, y-i)):
+      position = save_king(position, key, sanity(x-i, y-i))
+    else:
+      if ocupied(position, sanity(x-i, y-i)) == enemy:
+        position = save_king(position, key, sanity(x-i, y-i))
+      break
+  for i in range(1, 7):
+    if not ocupied(position, sanity(x-i, y+i)):
+      position = save_king(position, key, sanity(x-i, y+i))
+    else:
+      if ocupied(position, sanity(x-i, y+i)) == enemy:
+        position = save_king(position, key, sanity(x-i, y+i))
+      break
+  return position
+
+def calculate(position, color):
+  position['WKing']['check'] = False
+  position['BKing']['check'] = False
+  for key in position:
+    #Maybe for future  and position[key]['name'][0] != color
+    if position[key]['location'] != 'whiteHolder' and  position[key]['location'] != 'blackHolder':
+      position[key]['moves'] = []      
+      x = int(position[key]['location'][0])
+      y = int(position[key]['location'][1])
+      # WHITE POWN
+      if position[key]['name'][1] == 'P' and position[key]['name'][0] == 'W':
+        if not ocupied(position, sanity(x, y+1)):
+          position[key]['moves'].append(sanity(x, y+1))
+        if position[key]['notMoved'] and not ocupied(position, sanity(x, y+2)):
+          position[key]['moves'].append(sanity(x, y+2))
+        if ocupied(position, sanity(x+1, y+1)) == 'B':
+          position[key]['moves'].append(sanity(x+1, y+1))
+        if ocupied(position, sanity(x-1, y+1)) == 'B':
+          position[key]['moves'].append(sanity(x-1, y+1))
+      # BLACK POWN
+      elif position[key]['name'][1] == 'P' and position[key]['name'][0] == 'B' and position[key]['name'][0] != color:
+        if not ocupied(position, sanity(x, y-1)):
+          position[key]['moves'].append(sanity(x, y-1))
+        if position[key]['notMoved'] and not ocupied(position, sanity(x, y-2)):
+          position[key]['moves'].append(sanity(x, y-2))
+        if ocupied(position, sanity(x+1, y-1)) == 'W':
+          position[key]['moves'].append(sanity(x+1, y-1))
+        if ocupied(position, sanity(x-1, y-1)) == 'W':
+          position[key]['moves'].append(sanity(x-1, y-1))
+      # WHITE ROOK
+      elif position[key]['name'][1] == 'R' and position[key]['name'][0] == 'W':
+        position = straight_move_test(position, key, x, y, 'B') 
+      # BLACK ROOK
+      elif position[key]['name'][1] == 'R' and position[key]['name'][0] == 'B':
+        position = straight_move_test(position, key, x, y, 'W')
+      # WHITE Bishop
+      elif position[key]['name'][1] == 'B' and position[key]['name'][0] == 'W':
+        position = incline_move_test(position, key, x, y, 'B') 
+      # BLACK Bishop
+      elif position[key]['name'][1] == 'B' and position[key]['name'][0] == 'B':
+        position = incline_move_test(position, key, x, y, 'W')
+      #WHITE KNIGHT
+      elif position[key]['name'][0:3] == 'WKN':
+        if not ocupied(position, sanity(x+2, y-1)) or ocupied(position, sanity(x+2, y-1)) == 'B':
+          position[key]['moves'].append(sanity(x+2, y-1))
+        if not ocupied(position, sanity(x+2, y+1)) or ocupied(position, sanity(x+2, y+1)) == 'B': 
+          position[key]['moves'].append(sanity(x+2, y+1))
+        if not ocupied(position, sanity(x-2, y+1)) or ocupied(position, sanity(x-2, y+1)) == 'B':
+          position[key]['moves'].append(sanity(x-2, y+1))
+        if not ocupied(position, sanity(x-2, y-1)) or ocupied(position, sanity(x-2, y-1)) == 'B':
+          position[key]['moves'].append(sanity(x-2, y-1))
+        if not ocupied(position, sanity(x-1, y+2)) or ocupied(position, sanity(x-1, y+2)) == 'B':
+          position[key]['moves'].append(sanity(x-1, y+2))
+        if not ocupied(position, sanity(x-1, y-2)) or ocupied(position, sanity(x-1, y-2)) == 'B':
+          position[key]['moves'].append(sanity(x-1, y-2))
+        if not ocupied(position, sanity(x+1, y+2)) or ocupied(position, sanity(x+1, y+2)) == 'B':
+          position[key]['moves'].append(sanity(x+1, y+2))
+        if not ocupied(position, sanity(x+1, y-2)) or ocupied(position, sanity(x+1, y-2)) == 'B':
+          position[key]['moves'].append(sanity(x+1, y-2))
+      #BLACK KNIGHT
+      elif position[key]['name'][0:3] == 'BKN':
+        if not ocupied(position, sanity(x+2, y-1)) or ocupied(position, sanity(x+2, y-1)) == 'W':
+          position[key]['moves'].append(sanity(x+2, y-1))
+        if not ocupied(position, sanity(x+2, y+1)) or ocupied(position, sanity(x+2, y+1)) == 'W': 
+          position[key]['moves'].append(sanity(x+2, y+1))
+        if not ocupied(position, sanity(x-2, y+1)) or ocupied(position, sanity(x-2, y+1)) == 'W':
+          position[key]['moves'].append(sanity(x-2, y+1))
+        if not ocupied(position, sanity(x-2, y-1)) or ocupied(position, sanity(x-2, y-1)) == 'W':
+          position[key]['moves'].append(sanity(x-2, y-1))
+        if not ocupied(position, sanity(x-1, y+2)) or ocupied(position, sanity(x-1, y+2)) == 'W':
+          position[key]['moves'].append(sanity(x-1, y+2))
+        if not ocupied(position, sanity(x-1, y-2)) or ocupied(position, sanity(x-1, y-2)) == 'W':
+          position[key]['moves'].append(sanity(x-1, y-2))
+        if not ocupied(position, sanity(x+1, y+2)) or ocupied(position, sanity(x+1, y+2)) == 'W':
+          position[key]['moves'].append(sanity(x+1, y+2))
+        if not ocupied(position, sanity(x+1, y-2)) or ocupied(position, sanity(x+1, y-2)) == 'W':
+          position[key]['moves'].append(sanity(x+1, y-2))
+      # WHITE QUEEN
+      elif position[key]['name'][1] == 'Q' and position[key]['name'][0] == 'W':
+        position = straight_move_test(position, key, x, y, 'B')
+        position = incline_move_test(position, key, x, y, 'B')
+      # BLACK QUEEN
+      elif position[key]['name'][1] == 'Q' and position[key]['name'][0] == 'B':
+        position = straight_move_test(position, key, x, y, 'W')
+        position = incline_move_test(position, key, x, y, 'W')
+      #WHITE KING
+      elif position[key]['name'][0:3] == 'WKi':
+        if not ocupied(position, sanity(x+1, y-1)) or ocupied(position, sanity(x+1, y-1)) == 'B':
+          position[key]['moves'].append(sanity(x+1, y-1))
+        if not ocupied(position, sanity(x+1, y+1)) or ocupied(position, sanity(x+1, y+1)) == 'B':
+          position[key]['moves'].append(sanity(x+1, y+1))
+        if not ocupied(position, sanity(x+1, y)) or ocupied(position, sanity(x+1, y)) == 'B':
+          position[key]['moves'].append(sanity(x+1, y))
+        if not ocupied(position, sanity(x-1, y-1)) or ocupied(position, sanity(x-1, y-1)) == 'B':
+          position[key]['moves'].append(sanity(x-1, y-1))
+        if not ocupied(position, sanity(x-1, y+1)) or ocupied(position, sanity(x-1, y+1)) == 'B':
+          position[key]['moves'].append(sanity(x-1, y+1))
+        if not ocupied(position, sanity(x-1, y)) or ocupied(position, sanity(x-1, y)) == 'B':
+          position[key]['moves'].append(sanity(x-1, y))
+        if not ocupied(position, sanity(x, y-1)) or ocupied(position, sanity(x, y-1)) == 'B':
+          position[key]['moves'].append(sanity(x, y-1))
+        if not ocupied(position, sanity(x, y+1)) or ocupied(position, sanity(x, y+1)) == 'B':
+          position[key]['moves'].append(sanity(x, y+1))
+      #BLACK KING
+      elif position[key]['name'][0:3] == 'BKi':
+        if not ocupied(position, sanity(x+1, y-1)) or ocupied(position, sanity(x+1, y-1)) == 'W':
+          position[key]['moves'].append(sanity(x+1, y-1))
+        if not ocupied(position, sanity(x+1, y+1)) or ocupied(position, sanity(x+1, y+1)) == 'W':
+          position[key]['moves'].append(sanity(x+1, y+1))
+        if not ocupied(position, sanity(x+1, y)) or ocupied(position, sanity(x+1, y)) == 'W':
+          position[key]['moves'].append(sanity(x+1, y))
+        if not ocupied(position, sanity(x-1, y-1)) or ocupied(position, sanity(x-1, y-1)) == 'W':
+          position[key]['moves'].append(sanity(x-1, y-1))
+        if not ocupied(position, sanity(x-1, y+1)) or ocupied(position, sanity(x-1, y+1)) == 'W':
+          position[key]['moves'].append(sanity(x-1, y+1))
+        if not ocupied(position, sanity(x-1, y)) or ocupied(position, sanity(x-1, y)) == 'W':
+          position[key]['moves'].append(sanity(x-1, y))
+        if not ocupied(position, sanity(x, y-1)) or ocupied(position, sanity(x, y-1)) == 'W':
+          position[key]['moves'].append(sanity(x, y-1))
+        if not ocupied(position, sanity(x, y+1)) or ocupied(position, sanity(x, y+1)) == 'W':
+          position[key]['moves'].append(sanity(x, y+1))
+      
   position = check_king(position)
   return position
 
 def calculate_moves(position=start_position):
+  position['WKing']['check'] = False
+  position['BKing']['check'] = False
   for key in position:
-    if position[key]['location'] == 'whiteHolder' or  position[key]['location'] == 'blackHolder':
-      continue
-    position[key]['moves'] = []
-    x = int(position[key]['location'][0])
-    y = int(position[key]['location'][1])
-    # WHITE POWN
-    if position[key]['name'][1] == 'P' and position[key]['name'][0] == 'W':
-
-      if not ocupied(position, sanity(x, y+1)):
-        position = save_king(position, key, sanity(x, y+1))
-      if position[key]['notMoved'] and not ocupied(position, sanity(x, y+2)):
-        position = save_king(position, key, sanity(x, y+2))
-      if ocupied(position, sanity(x+1, y+1)) == 'B':
-        position = save_king(position, key, sanity(x+1, y+1))
-      if ocupied(position, sanity(x-1, y+1)) == 'B':
-        position = save_king(position, key, sanity(x-1, y+1))
-    # BLACK POWN
-    if position[key]['name'][1] == 'P' and position[key]['name'][0] == 'B':
-      if not ocupied(position, sanity(x, y-1)):
-        position = save_king(position, key, sanity(x, y-1))
-      if position[key]['notMoved'] and not ocupied(position, sanity(x, y-2)):
-        position = save_king(position, key, sanity(x, y-2))
-      if ocupied(position, sanity(x+1, y-1)) == 'W':
-        position = save_king(position, key, sanity(x+1, y-1))
-      if ocupied(position, sanity(x-1, y-1)) == 'W':
-        position = save_king(position, key, sanity(x-1, y-1))
-    # WHITE ROOK
-    if position[key]['name'][1] == 'R' and position[key]['name'][0] == 'W':
-      position = straight_move(position, key, x, y, 'B') 
-    # BLACK ROOK
-    if position[key]['name'][1] == 'R' and position[key]['name'][0] == 'B':
-      position = straight_move(position, key, x, y, 'W')
+    position[key]['info'] = []
+    if position[key]['location'] != 'whiteHolder' and  position[key]['location'] != 'blackHolder':
+      position[key]['moves'] = []
+      x = int(position[key]['location'][0])
+      y = int(position[key]['location'][1])
+      # WHITE POWN
+      if position[key]['name'][1] == 'P' and position[key]['name'][0] == 'W':
+        if not ocupied(position, sanity(x, y+1)):
+          position = save_king(position, key, sanity(x, y+1))
+        if position[key]['notMoved'] and not ocupied(position, sanity(x, y+2)):
+          position = save_king(position, key, sanity(x, y+2))
+        if ocupied(position, sanity(x+1, y+1)) == 'B':
+          position = save_king(position, key, sanity(x+1, y+1))
+        if ocupied(position, sanity(x-1, y+1)) == 'B':
+          position = save_king(position, key, sanity(x-1, y+1))
+      # BLACK POWN
+      elif position[key]['name'][1] == 'P' and position[key]['name'][0] == 'B':
+        if not ocupied(position, sanity(x, y-1)):
+          position = save_king(position, key, sanity(x, y-1))
+        if position[key]['notMoved'] and not ocupied(position, sanity(x, y-2)):
+          position = save_king(position, key, sanity(x, y-2))
+        if ocupied(position, sanity(x+1, y-1)) == 'W':
+          position = save_king(position, key, sanity(x+1, y-1))
+        if ocupied(position, sanity(x-1, y-1)) == 'W':
+          position = save_king(position, key, sanity(x-1, y-1))
+      # WHITE ROOK
+      elif position[key]['name'][1] == 'R' and position[key]['name'][0] == 'W':
+        position = straight_move(position, key, x, y, 'B') 
+      # BLACK ROOK
+      elif position[key]['name'][1] == 'R' and position[key]['name'][0] == 'B':
+        position = straight_move(position, key, x, y, 'W')
+      # WHITE Bishop
+      elif position[key]['name'][1] == 'B' and position[key]['name'][0] == 'W':
+        position = incline_move(position, key, x, y, 'B')
+      # BLACK Bishop
+      elif position[key]['name'][1] == 'B' and position[key]['name'][0] == 'B':
+        position = incline_move(position, key, x, y, 'W')
+      # WHITE KNIGHT
+      elif position[key]['name'][0:3] == 'WKN':
+        if not ocupied(position, sanity(x+2, y+1)) or ocupied(position, sanity(x+2, y+1)) == 'B':
+          position = save_king(position, key, sanity(x+2, y+1))
+        if not ocupied(position, sanity(x+2, y-1)) or ocupied(position, sanity(x+2, y-1)) == 'B':
+          position = save_king(position, key, sanity(x+2, y-1))
+        if not ocupied(position, sanity(x-2, y+1)) or ocupied(position, sanity(x-2, y+1)) == 'B':
+          position = save_king(position, key, sanity(x-2, y+1))
+        if not ocupied(position, sanity(x-2, y-1)) or ocupied(position, sanity(x-2, y-1)) == 'B':
+          position = save_king(position, key, sanity(x-2, y-1))
+        if not ocupied(position, sanity(x-1, y+2)) or ocupied(position, sanity(x-1, y+2)) == 'B':
+          position = save_king(position, key, sanity(x-1, y+2))
+        if not ocupied(position, sanity(x-1, y-2)) or ocupied(position, sanity(x-1, y-2)) == 'B':
+          position = save_king(position, key, sanity(x-1, y-2))
+        if not ocupied(position, sanity(x+1, y+2)) or ocupied(position, sanity(x+1, y+2)) == 'B':
+          position = save_king(position, key, sanity(x+1, y+2))
+        if not ocupied(position, sanity(x+1, y-2)) or ocupied(position, sanity(x+1, y-2)) == 'B':
+          position = save_king(position, key, sanity(x+1, y-2))
+      # BLACK KNIGHT
+      elif position[key]['name'][0:3] == 'BKN':
+        if not ocupied(position, sanity(x+2, y+1)) or ocupied(position, sanity(x+2, y+1)) == 'W':
+          position = save_king(position, key, sanity(x+2, y+1))
+        if not ocupied(position, sanity(x+2, y-1)) or ocupied(position, sanity(x+2, y-1)) == 'W':
+          position = save_king(position, key, sanity(x+2, y-1))
+        if not ocupied(position, sanity(x-2, y+1)) or ocupied(position, sanity(x-2, y+1)) == 'W':
+          position = save_king(position, key, sanity(x-2, y+1))
+        if not ocupied(position, sanity(x-2, y-1)) or ocupied(position, sanity(x-2, y-1)) == 'W':
+          position = save_king(position, key, sanity(x-2, y-1))
+        if not ocupied(position, sanity(x-1, y+2)) or ocupied(position, sanity(x-1, y+2)) == 'W':
+          position = save_king(position, key, sanity(x-1, y+2))
+        if not ocupied(position, sanity(x-1, y-2)) or ocupied(position, sanity(x-1, y-2)) == 'W':
+          position = save_king(position, key, sanity(x-1, y-2))
+        if not ocupied(position, sanity(x+1, y+2)) or ocupied(position, sanity(x+1, y+2)) == 'W':
+          position = save_king(position, key, sanity(x+1, y+2))
+        if not ocupied(position, sanity(x+1, y-2)) or ocupied(position, sanity(x+1, y-2)) == 'W':
+          position = save_king(position, key, sanity(x+1, y-2))
+      # WHITE QUEEN
+      elif position[key]['name'][1] == 'Q' and position[key]['name'][0] == 'W':
+        position = straight_move(position, key, x, y, 'B')
+        position = incline_move(position, key, x, y, 'B')
+      # BLACK QUEEN
+      elif position[key]['name'][1] == 'Q' and position[key]['name'][0] == 'B':
+        position = straight_move(position, key, x, y, 'W')
+        position = incline_move(position, key, x, y, 'W')
+      # BLACK KING
+      elif position[key]['name'][0:3] == 'BKi':
+        if not ocupied(position, sanity(x+1, y+1)) or ocupied(position, sanity(x+1, y+1)) == 'W':
+          position = save_king(position, key, sanity(x+1, y+1))
+        if not ocupied(position, sanity(x+1, y-1)) or ocupied(position, sanity(x+1, y-1)) == 'W':
+          position = save_king(position, key, sanity(x+1, y-1))
+        if not ocupied(position, sanity(x+1, y)) or ocupied(position, sanity(x+1, y)) == 'W':
+          position = save_king(position, key, sanity(x+1, y))
+        if not ocupied(position, sanity(x-1, y+1)) or ocupied(position, sanity(x-1, y+1)) == 'W':
+          position = save_king(position, key, sanity(x-1, y+1))
+        if not ocupied(position, sanity(x-1, y-1)) or ocupied(position, sanity(x-1, y-1)) == 'W':
+          position = save_king(position, key, sanity(x-1, y-1))
+        if not ocupied(position, sanity(x-1, y)) or ocupied(position, sanity(x-1, y)) == 'W':
+          position = save_king(position, key, sanity(x-1, y))
+        if not ocupied(position, sanity(x, y+1)) or ocupied(position, sanity(x, y+1)) == 'W':
+          position = save_king(position, key, sanity(x, y+1))
+        if not ocupied(position, sanity(x, y-1)) or ocupied(position, sanity(x, y-1)) == 'W':
+          position = save_king(position, key, sanity(x, y-1))
+      # WHITE KING
+      elif position[key]['name'][0:3] == 'WKi':
+        if not ocupied(position, sanity(x+1, y+1)) or ocupied(position, sanity(x+1, y+1)) == 'B':
+          position = save_king(position, key, sanity(x+1, y+1))
+        if not ocupied(position, sanity(x+1, y-1)) or ocupied(position, sanity(x+1, y-1)) == 'B':
+          position = save_king(position, key, sanity(x+1, y-1))
+        if not ocupied(position, sanity(x+1, y)) or ocupied(position, sanity(x+1, y)) == 'B':
+          position = save_king(position, key, sanity(x+1, y))
+        if not ocupied(position, sanity(x-1, y+1)) or ocupied(position, sanity(x-1, y+1)) == 'B':
+          position = save_king(position, key, sanity(x-1, y+1))
+        if not ocupied(position, sanity(x-1, y-1)) or ocupied(position, sanity(x-1, y-1)) == 'B':
+          position = save_king(position, key, sanity(x-1, y-1))
+        if not ocupied(position, sanity(x-1, y)) or ocupied(position, sanity(x-1, y)) == 'B':
+          position = save_king(position, key, sanity(x-1, y))
+        if not ocupied(position, sanity(x, y+1)) or ocupied(position, sanity(x, y+1)) == 'B':
+          position = save_king(position, key, sanity(x, y+1))
+        if not ocupied(position, sanity(x, y-1)) or ocupied(position, sanity(x, y-1)) == 'B':
+          position = save_king(position, key, sanity(x, y-1))
 
   position = check_king(position)
+  if position['WKing']['check'] or position['BKing']['check']:
+    position = game_over(position)
   return position
-
 
 def attac(move, position):
   for key in position:
