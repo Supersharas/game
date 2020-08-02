@@ -56,7 +56,6 @@ function startFun(){
     document.getElementById('homeCheck').style.visibility = 'visible';
     document.getElementById('homeCheck').innerText = 'GAME OVER';
   }
-	//start_getNews();
 }
 
 startFun();
@@ -72,7 +71,8 @@ function refresh(){
       'Content-Type': 'application/json'
       // 'Content-Type': 'application/x-www-form-urlencoded',
     },
-    body: JSON.stringify({moveNumber: parseInt(data.move_number)})
+    body: JSON.stringify({moveNumber: parseInt(data.move_number), gameId:
+    data.game_id})
   }).then(response => response.json()).then(function(response){
     console.log('response', response);
     if (response){
@@ -288,3 +288,4 @@ window.addEventListener('mousemove', e => {
 	}
 });
 
+start_getNews();

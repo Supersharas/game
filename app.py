@@ -5,7 +5,7 @@ import sys
 import json
 from markupsafe import escape
 
-from chessEngine import calculate_moves, attac, time_master
+from chessEngine import reffery, calculate_moves
 
 from models import setup_db, Game, Player, State, Offer, db
 
@@ -15,6 +15,26 @@ app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 app.debug = True
 
 setup_db(app)
+
+# CASH ONLY FOR DEVELOPMENT
+returned = []
+games = {}
+
+def cash_get(game, move_n):
+  for key in games:
+    if key == game:
+      if games[key] == move_n:
+        returned.append('yes')
+        return True
+  games[game] = move_n
+  return False
+
+def cash_put(user, move_n):
+  games[user] = move_n
+
+@app.route('/cash')
+def check_cash():
+  return render_template('cash.html',ret=returned, games=games)
 
 @app.route('/')
 def hello_world():
@@ -56,45 +76,45 @@ def start_game(offer):
 
 @app.route('/chess/move', methods=['GET', 'POST'])
 def move():
+  error = False
   if request.method == 'POST':
     content = json.loads(request.data)
     figure = content.get('figure', None)
     move_number = content.get('moveNumber', None)
+    gameId = content.get('gameId', None)
     if figure:
       if session['userId']:
         state = State.query.join(Game).filter(or_(Game.player_one==session['userId'], Game.player_two==session['userId'])).order_by(State.move_number.desc()).first()
-        if state.move == state.position[figure]['color']:
-          if state.move == 'white':
-            next_move = 'black'
-          else:
-            next_move = 'white'
-          if content['move'] in state.position[figure]['moves']:
-            temp = state.position
-            holder =  attac(content['move'], state.position)
-            if holder:
-              temp[holder['figure']]['location'] = holder['holder']
-              temp[holder['figure']]['moves'] = []
-            temp[content['figure']]['location'] = content['move']
-            temp[content['figure']]['notMoved'] = False
-            new_position = calculate_moves(temp)
-            time = time_master(state.date, state.white_timer, state.black_timer, state.move)
-          next_state = State(game_id=state.game_id, move_number=state.move_number+1, move=next_move, position=new_position, 
-            white_timer=time['white'], black_timer=time['black'])
-          State.insert(next_state)
-          data = next_state.format()
-          db.session.close()
+        legal_move = reffery(state, figure, content['move'])
+        if legal_move:
+          try:
+            next_state = State(game_id=state.game_id, move_number=state.move_number+1, move=legal_move['next_move'], position=legal_move['new_position'], 
+            white_timer=legal_move['time']['white'], black_timer=legal_move['time']['black'])
+            State.insert(next_state)
+            data = next_state.format()
+            cash_put(state.game_id, state.move_number+1)
+          except:
+            error = True
+            db.session.rollback()
+            print(sys.exc_info())
+          finally:
+            db.session.close()
+          if error:
+            return json.dumps({'error': True})
           return json.dumps(data)
         else:
           return json.dumps({'not': 'your move'})
     if move_number:
       if session['userId']:
+        cashed = cash_get(gameId, move_number)
+        if cashed:
+          return json.dumps(None)
         state = State.query.join(Game).filter(or_(Game.player_one==session['userId'], Game.player_two==session['userId'])).order_by(State.move_number.desc()).first()
         new_state = state.format()
         db.session.close()
         if move_number < new_state['move_number']:
           return json.dumps(new_state)
         else:
-        #return json.dumps({'kas': 'per huiniene'})
           return json.dumps(None)
   else:
     return json.dumps({'kas': 'per huiniene'})
