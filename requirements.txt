@@ -39,6 +39,7 @@ Flask==1.1.2
 Flask-SQLAlchemy==2.4.3
 future==0.18.2
 greenlet==0.4.16
+# Heroku
 gunicorn==20.0.4
 html5lib==1.1
 idna==2.9

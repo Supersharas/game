@@ -9,10 +9,12 @@ from datetime import datetime
 #database_name = "games"
 #database_path = 'postgres://fwkpnotv:1wvhldt6f766_VfD2ighEipij_Q9xQJL@rogue.db.elephantsql.com:5432/fwkpnotv'
 # FOR REPL
-database_path = 'postgres://fwkpnotv:1wvhldt6f766_VfD2ighEipij_Q9xQJL@rogue.db.elephantsql.com:5432/fwkpnotv'
+##database_path = 'postgres://fwkpnotv:1wvhldt6f766_VfD2ighEipij_Q9xQJL@rogue.db.elephantsql.com:5432/fwkpnotv'
 # FOR HOME POSTGRES
 #database_path = 'postgresql://postgres_user:9Krokodilai@localhost:5432/games'
-
+# HEROKU
+DATABASE_URL = os.environ['DATABASE_URL']
+database_path = DATABASE_URL
 
 #app = Flask(__name__)
 
