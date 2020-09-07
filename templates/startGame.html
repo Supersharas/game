@@ -46,7 +46,7 @@
 
 <script>
 
-  //razyTime = setInterval(refresh, 1000);
+  crazyTime = setInterval(refresh, 1000);
   function refresh(){
     fetch('/chess/lobby').then(response => response.json()).then(function(response){
       if(response.game.id){

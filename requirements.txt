@@ -38,7 +38,6 @@ fissix==20.5.1
 Flask==1.1.2
 Flask-SQLAlchemy==2.4.3
 future==0.18.2
-glfw==1.11.2
 greenlet==0.4.16
 html5lib==1.1
 idna==2.9
