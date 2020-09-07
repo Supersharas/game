@@ -1,6 +1,6 @@
 import copy
 import datetime
-
+occupied_old = []
 start_position = {
   'WP8': {'name': 'WP8', 'color': 'white', 'location': '01', 'pic':'WP.png', 'notMoved': True, 'moves': []},
   'WP7': {'name': 'WP7', 'color': 'white', 'location': '11', 'pic':'WP.png', 'notMoved': True, 'moves': []},
@@ -39,6 +39,7 @@ start_position = {
 def sanity(x, y):
   if x<8 and x>=0 and y<8 and y>=0:
     return  str(x) + str(y)
+  return False
 
 def ocupied(position, loc):
   for key in position:
@@ -543,6 +544,42 @@ def time_master(time, white, black, move):
     black = diff.total_seconds() - white
   return {'white': white, 'black': black}
 
+def en_passant(temp, figure, move, move_number):
+  result = []
+  pawns = []
+  ocupied_old = []
+  for key in temp:
+    ocupied_old.append(temp[key]['location'])
+    if temp[key]['name'][1] == 'P':
+      pawns.append(temp[key]['location'])
+  x = int(temp[figure]['location'][0])
+  y = int(temp[figure]['location'][0])
+  if temp[figure]['name'][0] == 'W':
+    if sanity(x, y-1) not in ocupied_old:
+      if sanity(x-1, y) in pawns:
+        result.append((sanity(x, y-1), sanity(x-1, y)))
+      if sanity(x+1, y) in pawns:
+        result.append((sanity(x, y-1), sanity(x-1, y))) 
+  if temp[figure]['name'][0] == 'B':
+    if sanity(x, y+1) not in ocupied_old:
+      if sanity(x-1, y) in pawns:
+        result.append((sanity(x, y), sanity(x-1, y)))
+      if sanity(x+1, y) in pawns:
+        result.append((sanity(x, y-1), sanity(x-1, y)))
+  if result:
+    for n in result:
+      for key in temp:
+        if temp[key]['location']  == n[1]:
+          if 'en_passant' in temp[key]:
+            temp[key]['en_passant'].append((n[0], move_number))
+            temp[key]['capture'].append(n[1])
+          else:
+            temp[key]['en_passant'] = [(n[0], move_number)]
+            temp[key]['capture'] = [n[1]]
+  return temp
+          
+
+
 def reffery(state, figure, move):
   if state.move == state.position[figure]['color']:
     if state.move == 'white':
@@ -565,6 +602,8 @@ def reffery(state, figure, move):
         elif move == '67':
           temp['BR2']['location'] = '57'
       temp[figure]['location'] = move
+      if temp[figure]['name'][1] == 'P' and temp[figure]['notMoved']:
+        temp = en_passant(temp, figure, move, state.move_number)
       temp[figure]['notMoved'] = False
       new_position = calculate_moves(temp)
       time = time_master(state.date, state.white_timer, state.black_timer, state.move)

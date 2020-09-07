@@ -1,17 +1,23 @@
 
 <head>
-  <style>
-    .offers {
-      display: inline-block;
-    }
-  </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='start_style.css') }}">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Great Vibes">
 </head>
+
+<div id='topQuote'>“One doesn’t have to play well, it’s enough to play better than your opponent.” – Siegbert Tarrasch</div>
 
 {% if test %}
   <a href="{{ url_for('logout') }}"><button>LOG OUT</button><a/>
 {% endif %}
 
-<h1>old fashion game</h1>
+<section id='options'>
+  <div class='option'>
+    <div id='newGame' onclick="location.href = '{{ url_for('offer') }}';"> start</br> game </div>
+  </div>
+  <div class='option'>
+    <div id='mock'> mock</div>
+  </div>
+</section>
 
 <a href="{{ url_for('offer') }}"><button>create chalange</button></a>
 <button onclick="startAsinc()">Refresh</button>
