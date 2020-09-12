@@ -1,0 +1,32 @@
+
+
+<head>
+	<link rel="stylesheet" href="{{ url_for('static', filename='login_style.css') }}">
+</head>
+
+<body>
+	
+	<div id="loginDiv">
+		<h1>Please Log in</h1>
+		<form id='loginForm' action="{{ url_for('login') }}" method="POST">
+			<label for="userName">User Name</label>
+			<input type="text" name="userName">
+			<label for='password'>Password</label>
+			<input type="password" name="password">
+		</form>
+		<button type="submit" form="loginForm" value="Submit">Submit</button>
+	</div>
+	
+	<div id='registerDiv'>
+		<h1>Register</h1>
+		<form id='registerForm' action="{{ url_for('register') }}" method="POST">
+			<label for="userName">User Name</label>
+			<input type="text" name="userName">
+			<label for='password'>Password</label>
+			<input type="password" name="password">
+			<label for='repeatPassword'>Repeat Password</label>
+			<input type="password" name="repeatPassword">
+		</form>
+		<button type="submit" form="registerForm" value="Submit">Submit</button>
+	</div>
+</body>

@@ -1,5 +1,5 @@
 import os
-from sqlalchemy import Column, String, Integer, create_engine, JSON
+from sqlalchemy import Column, String, Integer, create_engine, JSON, LargeBinary
 from flask_sqlalchemy import SQLAlchemy
 import json
 from datetime import datetime
@@ -11,7 +11,7 @@ from datetime import datetime
 # FOR REPL
 ##database_path = 'postgres://fwkpnotv:1wvhldt6f766_VfD2ighEipij_Q9xQJL@rogue.db.elephantsql.com:5432/fwkpnotv'
 # FOR HOME POSTGRES
-#database_path = 'postgresql://postgres_user:9Krokodilai@localhost:5432/games'
+# database_path = 'postgresql://postgres_user:9Krokodilai@localhost:5432/games'
 # HEROKU
 DATABASE_URL = os.environ['DATABASE_URL']
 database_path = DATABASE_URL
@@ -139,6 +139,9 @@ class Player(db.Model):
   email = db.Column(db.String(50), nullable=False, default='Guest')
   date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
   rating = db.Column(db.Integer, nullable=False, default='100')
+  password = db.Column(db.String(), default='guest')
+  random = db.Column(db.LargeBinary)
+  updated = db.Column(db.DateTime, onupdate=datetime.utcnow)
 
   # def __init__(self, name, email, rating):
   #   self.name = name
@@ -162,26 +165,9 @@ class Player(db.Model):
       'name': self.name,
       'email': self.email,
       'date': self.date,
-      'rating': self.rating
+      'rating': self.rating,
+      'password': self.password,
+      # -- TO DELEAT
+      'random': self.random,
+      'random_time': self.random_time
     }
-
-'''
-Category
-
-'''
-'''
-class Category(db.Model):  
-  __tablename__ = 'categories'
-
-  id = Column(Integer, primary_key=True)
-  type = Column(String)
-
-  def __init__(self, type):
-    self.type = type
-
-  def format(self):
-    return {
-      'id': self.id,
-      'type': self.type
-    }
-'''

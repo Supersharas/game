@@ -3,6 +3,7 @@ from flask import render_template
 from sqlalchemy import or_
 import sys
 import json
+import hashlib
 from markupsafe import escape
 
 from chessEngine import reffery, calculate_moves
@@ -12,6 +13,7 @@ from models import setup_db, Game, Player, State, Offer, db
 app = Flask(__name__,
 static_folder='static' )
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+salt = b'\xb1\xc6\xd4\xe8[\xae\xdc\xb7\xb6\xb9h\x90\xda3J$`8\x04\x1e'
 app.debug = True
 
 setup_db(app)
@@ -43,6 +45,62 @@ def hello_world():
 @app.route('/jsdemo')
 def jsdemo():
   return render_template('demo.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+  error = False
+  wrong_user = False
+  wrong_password = False
+  please_enter = False
+  if request.method == 'POST':
+    content = request.form
+    username = request.form.get('userName')
+    password = request.form.get('password')
+    pa = password.encode()
+    h = hashlib.sha256(pa + salt).hexdigest()
+    if username and password:
+      try:
+        player = Player.query.filter_by(name=username).first()
+        if player:
+          if player.password != h:
+            wrong_password = 'Wrong password'
+        else:
+          wrong_user = "Username does not exists on our records"
+      except:
+        error = True
+        db.session.rollback()
+      finally:
+        db.session.close()
+    else:
+      please_enter = 'Please prowide user name and password!'
+    if error:
+      return render_template('login.html')
+    else:
+      return redirect(url_for('chess'))
+
+  return render_template('login.html')
+
+@app.route('/register', methods=['POST'])
+def register():
+  error = False
+  username = request.form.get('userName')
+  password2 = request.form.get('repeatPassword')
+  password = request.form.get('password')
+  if username and password and password2:
+    if password == password2:
+      try:
+        pa = password.encode()
+        h = hashlib.sha256(pa + salt).hexdigest()
+        player = Player(name=username, password=h) 
+        Player.insert(player)
+        answer = player.format()
+      except:
+        error = True
+        db.session.rollback()
+      finally:
+        db.session.close()
+
+  return answer
 
 
 @app.route('/startGame/<int:offer>')
