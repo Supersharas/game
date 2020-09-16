@@ -1,27 +1,30 @@
+{% extends "base.html" %}
 
+{% block title %}chess{% endblock %}
+{% block head %}
 <head>
+  {{ super() }}
   <link rel="stylesheet" href="{{ url_for('static', filename='start_style.css') }}">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Great Vibes">
 </head>
+{% endblock %}
+
+{% block content %}
 
 <div id='topQuote'>“One doesn’t have to play well, it’s enough to play better than your opponent.” – Siegbert Tarrasch</div>
 
-{% if test %}
-  <a href="{{ url_for('logout') }}"><button>LOG OUT</button><a/>
-{% endif %}
-
 <section id='options'>
   <div class='option'>
-    <div id='logIn' onclick="location.href = '{{ url_for('login') }}'">Log in</div>
+    <div id='signIn' onclick="location.href = '{{ url_for('login') }}';">Log in</div>
   </div>
   <div class='option'>
     <div id='newGame' onclick="location.href = '{{ url_for('offer') }}';"> start</br> game </div>
   </div>
   <div class='option'>
-    <div id='rules'> chess rules</div>
+    <div id='rules' onclick="window.open('https://en.wikipedia.org/wiki/Rules_of_chess')"> chess rules</div>
   </div>
   <div class='option'>
-    <div id='tutorials'>tutorials</div>
+    <div id='tutorials' onclick="window.open('https://www.chessstrategyonline.com/tutorials')">tutorials</div>
   </div>
   <div class='option'>
     <div id='mock'> mock</div>
@@ -31,18 +34,10 @@
 <a href="{{ url_for('offer') }}"><button>create chalange</button></a>
 <button onclick="startAsinc()">Refresh</button>
 
-<div id="challange">
-  {% if my_game %}
-    <div class="offer"><button><h3>Please join my game {{my_game.id}}</h3></button></div>
-  {% endif %}
-</div>
-{{test}}
-
 <h1>Game lobby</h1>
 <h3>Choose your opponent wisely</h3>
 
 <div id='gameOffers'>
-  {{test}}
   <ul id="offers">
     {% for item in offers %}
         <h2>Game offers</h2>
@@ -55,7 +50,7 @@
 
 <script>
 
-  crazyTime = setInterval(refresh, 1000);
+  //crazyTime = setInterval(refresh, 1000);
   function refresh(){
     fetch('/chess/lobby').then(response => response.json()).then(function(response){
       if(response.game.id){
@@ -81,3 +76,5 @@
   //   }
   // }
 </script>
+
+{% endblock %}

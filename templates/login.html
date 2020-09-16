@@ -1,9 +1,13 @@
+{% extends "base.html" %}
 
-
+{% block head %}
+{{ super() }}
 <head>
 	<link rel="stylesheet" href="{{ url_for('static', filename='login_style.css') }}">
 </head>
+{% endblock %}
 
+{% block content %}
 <body>
 	
 	<div id="loginDiv">
@@ -11,22 +15,45 @@
 		<form id='loginForm' action="{{ url_for('login') }}" method="POST">
 			<label for="userName">User Name</label>
 			<input type="text" name="userName">
+      {% if userMsg %}
+        <div class='errorMsg'>{{userMsg}}</div>
+      {% endif %}
 			<label for='password'>Password</label>
 			<input type="password" name="password">
+      {% if passwordMsg %}
+        <div class='errorMsg'>{{passwordMsg}}</div>
+      {% endif %}
 		</form>
+    {% if enterMsg %}
+      <div class='errorMsg'>{{enterMsg}}</div>
+    {% endif %}
 		<button type="submit" form="loginForm" value="Submit">Submit</button>
 	</div>
+  {% if something %}
+    <div class='errorMsg'>{{something}}</div>
+  {% endif %}
 	
 	<div id='registerDiv'>
 		<h1>Register</h1>
 		<form id='registerForm' action="{{ url_for('register') }}" method="POST">
 			<label for="userName">User Name</label>
 			<input type="text" name="userName">
+      {% if userExists %}
+        <div class='errorMsg'>{{userExists}}</div>
+      {% endif %}
 			<label for='password'>Password</label>
 			<input type="password" name="password">
+      {% if passwordMsgRe %}
+        <div class='errorMsg'>{{passwordMsgRe}}</div>
+      {% endif %}
 			<label for='repeatPassword'>Repeat Password</label>
 			<input type="password" name="repeatPassword">
 		</form>
+    {% if enterMsg %}
+      <div class='errorMsg'>{{enterMsgRe}}</div>
+    {% endif %}
 		<button type="submit" form="registerForm" value="Submit">Submit</button>
 	</div>
 </body>
+
+{% endblock %}

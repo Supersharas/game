@@ -140,7 +140,7 @@ class Player(db.Model):
   date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
   rating = db.Column(db.Integer, nullable=False, default='100')
   password = db.Column(db.String(), default='guest')
-  random = db.Column(db.LargeBinary)
+  random = db.Column(db.String(100))
   updated = db.Column(db.DateTime, onupdate=datetime.utcnow)
 
   # def __init__(self, name, email, rating):

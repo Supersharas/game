@@ -1,0 +1,47 @@
+
+
+body {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  background: #98aeb3;
+  background-image: repeating-linear-gradient(-45deg, #03fcdb, #FFF 6px);
+  text-align: center;
+}
+
+#menuHolder {
+  float: left;
+}
+
+.menu {
+  display:inline-block;
+  top: 0.3em;
+  width: 2.2em;
+  height: 0.3em;
+  background: black;
+  box-shadow: 
+    0 0.6em 0 0 black,
+    0 1.2em 0 0 black;
+  margin-bottom: 2em;
+}
+
+#menuHolder:hover .menu {
+  
+  background: #fcc203;
+  box-shadow: 
+    0 0.6em 0 0 #fcc203,
+    0 1.2em 0 0 #fcc203;
+}
+#brand {
+  color: rgba(57, 158, 46);
+  font-size: 1.3em;
+  float: right;
+  margin-right: 2em;
+}
+
+#content {
+  display: inline-block;
+}
