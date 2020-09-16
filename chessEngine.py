@@ -1,5 +1,9 @@
+
 import copy
 import datetime
+
+from flask import current_app as app
+
 occupied_old = []
 start_position = {
   'WP8': {'name': 'WP8', 'color': 'white', 'location': '01', 'pic':'WP.png', 'notMoved': True, 'moves': []},
@@ -535,14 +539,6 @@ def attac(move, position):
       else:
         return {'figure': position[key]['name'], 'holder':'blackHolder'}
 
-def time_master(time, white, black, move):
-  now = datetime.datetime.utcnow()
-  diff = now - time
-  if move == 'white':
-    white = diff.total_seconds() - black
-  else:
-    black = diff.total_seconds() - white
-  return {'white': white, 'black': black}
 
 def en_passant(temp, figure, move, move_number):
   result = []
@@ -577,7 +573,22 @@ def en_passant(temp, figure, move, move_number):
             temp[key]['en_passant'] = [(n[0], move_number)]
             temp[key]['capture'] = [n[1]]
   return temp
-          
+   
+
+def time_master(time, white, black, move):
+  now = datetime.datetime.utcnow()
+  diff = now - time
+  if move == 'white':
+    white = diff.total_seconds() - black
+  else:
+    black = diff.total_seconds() - white
+  app.logger.info('time')
+  app.logger.info('time: %s' % time)
+  app.logger.info('now: %s' % now)
+  app.logger.info('diff: %s' % diff)
+  app.logger.info('white: %s' % white)
+  app.logger.info('black: %s' % black)
+  return {'white': white, 'black': black}       
 
 
 def reffery(state, figure, move):
