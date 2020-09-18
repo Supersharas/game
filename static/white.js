@@ -61,7 +61,8 @@ function startFun(){
 startFun();
 
 function start_getNews() {
-    getNews = setInterval(refresh, 1000);
+    //getNews = setInterval(refresh, 1000);
+    console.log('no news')
 }
 
 function refresh(){
@@ -206,6 +207,7 @@ function getBack() {
 
 function ifAllowed(fig, move){
   let figure = data.position[fig];
+  let game = gameId;
 	var posx = parseInt(figure.location[0]);
 	var posy = parseInt(figure.location[1]);
 	var desx = posx + move.x;
@@ -225,7 +227,7 @@ function ifAllowed(fig, move){
         'Content-Type': 'application/json'
         // 'Content-Type': 'application/x-www-form-urlencoded',
       },
-      body: JSON.stringify({'figure': figure.name, 'move': destination})
+      body: JSON.stringify({'figure': figure.name, 'move': destination, 'gameId': game})
     }).then(response => response.json()).then(function(response){
       console.log('response', response);
       //console.log('crazyTime after fetch', crazyTime);

@@ -18,13 +18,13 @@ body {
 
 .menu {
   display:inline-block;
-  top: 0.3em;
+  top: 10px;
   width: 2.2em;
-  height: 0.3em;
+  height: 4.5px;
   background: black;
   box-shadow: 
-    0 0.6em 0 0 black,
-    0 1.2em 0 0 black;
+    0 9px 0 0 black,
+    0 18px 0 0 black;
   margin-bottom: 2em;
 }
 
@@ -35,11 +35,28 @@ body {
     0 0.6em 0 0 #fcc203,
     0 1.2em 0 0 #fcc203;
 }
+
+
 #brand {
   color: rgba(57, 158, 46);
   font-size: 1.3em;
   float: right;
   margin-right: 2em;
+}
+
+#slide {
+  position: absolute;
+  margin-top: 30px;
+  width: 100px;
+  font-size: 1.7em;
+  left: -100px;
+}
+
+#slide div {
+  position: relative;
+  min-width: 100%;
+  border-style: solid;
+  background: rgb(255, 255, 255, 0.7);
 }
 
 #content {

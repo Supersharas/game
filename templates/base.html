@@ -9,16 +9,20 @@
 <body>
   {% if user %}
   <div id='User'>{{ user }}</div>
-  <a href="{{ url_for('logout') }}"><button>LOG OUT</button></a>
+  <div id='slide'>
+    <ul>
+      <li><a href="{{ url_for('logout') }}">Sign out</a></li>
+      <li>Profile</li>
+      <li>Contact us</li>
+    </ul>
+  </div>
   {% else %}
   <div id='menuHolder'>
     <div class="menu"></div>
   </div>
   <div id='slide'>
-    <ul>
-      <li>Sign in</li>
-      <li></li>
-    </ul>
+      <div>Sign in</div>
+      <div>Contact us</div>
   </div>
   {% endif %}
   <div id='brand'>Cucumber Cool</div>
