@@ -4,14 +4,11 @@ var homeMove = true;
 var homeTimer = document.getElementById('homeTimer');
 var awayTimer = document.getElementById('awayTimer');
 var clock = {
-	homeTime : '00:00',
-	awayTime : '00:00'
+	homeTime: '00:00',
+	awayTime: '00:00',
+  rawHome: 0,
+  rawAway: 0
 }
-
-console.log('color', color);
-console.log('move', data.move);
-console.log(color == data.move);
-console.log(data);
 
 var isDraging = false;
 
@@ -23,7 +20,6 @@ function startFun(){
 	} else {
 	  homeMove = false;
 	}
-  console.log('starting fun');
 	populate();
 	grab();
 	time();
@@ -61,7 +57,8 @@ function startFun(){
 startFun();
 
 function start_getNews() {
-    getNews = setInterval(refresh, 1000);
+    //getNews = setInterval(refresh, 1000);
+    console.log('no news')
 }
 
 function refresh(){
@@ -89,72 +86,51 @@ var crazyTime;
 homeTimer.innerText = clock.homeTime;
 awayTimer.innerText = clock.awayTime;
 
-function timer(someTime, someTimer, other) {
-  someTimer.style.backgroundColor = "red";
-	let minutes = parseInt(clock[someTime].slice(0,2));
-	let seconds = parseInt(clock[someTime].slice(3,5));
-	seconds += 1;
-	if (seconds == 60){
-		minutes += 1;
-		seconds = 0;
-	}
-	minutes = minutes.toString();
-	seconds = seconds.toString();
-	if (minutes.length == 1) {
-		minutes = '0' + minutes;
-	}
-	if (seconds.length == 1) {
-		seconds = '0' + seconds;
-	}
-	clock[someTime] = minutes + ':' + seconds;
-	someTimer.innerText = minutes + ':' + seconds;
-	other.style.backgroundColor = "white";
+function timer(someTime, someTimer, raw) {
+  clock[raw] += 1;
+  clock[someTime] = timePrinter(clock[raw]);
+  someTimer.innerText = clock[someTime];
+  console.log('clock', clock);
 }
 
 //console.log('outside crazyTime', crazyTime);
 
 function time() {
-  
-	//stop();
-
-	whiteSec = data.white_timer % 60
-	whiteMin = (data.white_timer - whiteSec) / 60
-	let wminutes = whiteMin.toString();
-	let wseconds = whiteSec.toString();
-	if (wminutes.length == 1) {
-		wminutes = '0' + wminutes;
-	}
-	if (wseconds.length == 1) {
-		wseconds = '0' + wseconds;
-	}
-	blackSec = data.black_timer % 60
-	blackMin = (data.black_timer - blackSec) / 60
-	let bminutes = blackMin.toString();
-	let bseconds = blackSec.toString();
-	if (bminutes.length == 1) {
-		bminutes = '0' + bminutes;
-	}
-	if (bseconds.length == 1) {
-		bseconds = '0' + bseconds;
-	}
+  let moveStarted = Date.parse(data.date);
+  let now = new Date();
+  let locale = now.getTimezoneOffset() * 60 * 1000;
+  let diff = Math.round((now - moveStarted + locale) / 1000);
+  if (data.move == 'white'){
+    var whiteTime = data.white_timer + diff;
+    var blackTime = data.black_timer
+  } else {
+    var whiteTime = data.white_timer
+    var blackTime = data.black_timer + diff;
+  }
 	if(color == 'white'){
-		clock.homeTime = wminutes + ':' + wseconds
-		clock.awayTime = bminutes + ':' + bseconds
+    clock.homeTime = timePrinter(whiteTime)
+    clock.rawHome = whiteTime
+    clock.awayTime = timePrinter(blackTime)
+    clock.rawAway = blackTime
 	} else {
-		clock.homeTime = bminutes + ':' + bseconds
-		clock.awayTime = wminutes + ':' + wseconds
-	}
-  console.log('this', this);
-  console.log('crazyTime', typeof crazyTime);
+    clock.homeTime = timePrinter(blackTime)
+    clock.rawHome = blackTime
+    clock.awayTime = timePrinter(whiteTime)
+    clock.rawAway = whiteTime
+  }
+
 	if(typeof crazyTime !== 'undefined') {
 		clearInterval(crazyTime);
 	}
+
 	if(homeMove){
-		crazyTime = setInterval(timer, 1000, 'homeTime', homeTimer, awayTimer);
-    console.log('home crazyTime', typeof crazyTime);
+    homeTimer.style.backgroundColor = "red";
+    awayTimer.style.backgroundColor = "white";
+		crazyTime = setInterval(timer, 1000, 'homeTime', homeTimer, 'rawHome');
 	} else {
-		crazyTime = setInterval(timer, 1000, 'awayTime', awayTimer, homeTimer);
-    console.log('away crazyTime', typeof crazyTime);
+    awayTimer.style.backgroundColor = "red";
+    homeTimer.style.backgroundColor = "white";
+		crazyTime = setInterval(timer, 1000, 'awayTime', awayTimer, 'rawAway');
 	}
 }
 // GET  
@@ -206,6 +182,7 @@ function getBack() {
 
 function ifAllowed(fig, move){
   let figure = data.position[fig];
+  let game = gameId;
 	var posx = parseInt(figure.location[0]);
 	var posy = parseInt(figure.location[1]);
 	var desx = posx + move.x;
@@ -225,7 +202,7 @@ function ifAllowed(fig, move){
         'Content-Type': 'application/json'
         // 'Content-Type': 'application/x-www-form-urlencoded',
       },
-      body: JSON.stringify({'figure': figure.name, 'move': destination})
+      body: JSON.stringify({'figure': figure.name, 'move': destination, 'gameId': game})
     }).then(response => response.json()).then(function(response){
       console.log('response', response);
       //console.log('crazyTime after fetch', crazyTime);
@@ -289,3 +266,28 @@ window.addEventListener('mousemove', e => {
 });
 
 start_getNews();
+
+function timePrinter(time) {
+  time = Math.round(time);
+  let sec = time % 60;
+  let allmin = Math.round((time - sec) / 60);
+  let min = allmin % 60;
+  let hours = Math.round((allmin - min) / 60);
+  let smin = min.toString();
+  if (smin.length == 1){
+    smin = '0' + smin;
+  }
+  let ssec = sec.toString()
+  if (ssec.length == 1){
+    ssec = '0' + ssec
+  }
+  if (hours){
+    let shours = hours.toString();
+    if (shours.length == 1){
+      shours =  '0' + shours;
+    }
+    return shours + ':' + smin + ':' + ssec;
+  } else{
+    return smin + ':' + ssec;
+  }
+}

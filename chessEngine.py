@@ -6,22 +6,22 @@ from flask import current_app as app
 
 occupied_old = []
 start_position = {
-  'WP8': {'name': 'WP8', 'color': 'white', 'location': '01', 'pic':'WP.png', 'notMoved': True, 'moves': []},
-  'WP7': {'name': 'WP7', 'color': 'white', 'location': '11', 'pic':'WP.png', 'notMoved': True, 'moves': []},
-  'WP6': {'name': 'WP6', 'color': 'white', 'location': '21', 'pic':'WP.png', 'notMoved': True, 'moves': []},
-  'WP5': {'name': 'WP5', 'color': 'white', 'location': '31', 'pic':'WP.png', 'notMoved': True, 'moves': []},
-  'WP4': {'name': 'WP4', 'color': 'white', 'location': '41', 'pic':'WP.png', 'notMoved': True, 'moves': []},
-  'WP3': {'name': 'WP3', 'color': 'white', 'location': '51', 'pic':'WP.png', 'notMoved': True, 'moves': []},
-  'WP2': {'name': 'WP2', 'color': 'white', 'location': '61', 'pic':'WP.png', 'notMoved': True, 'moves': []},
-  'WP1': {'name': 'WP1', 'color': 'white', 'location': '71', 'pic':'WP.png','notMoved': True, 'moves': []},
-  'BP8': {'name': 'BP8', 'color': 'black', 'location': '06', 'pic':'BP.png', 'notMoved': True, 'moves': []},
-  'BP1': {'name': 'BP1', 'color': 'black', 'location': '16', 'pic':'BP.png', 'notMoved': 'true', 'moves': []},
-  'BP2': {'name': 'BP2', 'color': 'black', 'location': '26', 'pic':'BP.png', 'notMoved': True, 'moves': []},
-  'BP3': {'name': 'BP3', 'color': 'black', 'location': '36', 'pic':'BP.png', 'notMoved': True, 'moves': []},
-  'BP4': {'name': 'BP4', 'color': 'black', 'location': '46', 'pic':'BP.png', 'notMoved': True, 'moves': []},
-  'BP5': {'name': 'BP5', 'color': 'black', 'location': '56', 'pic':'BP.png', 'notMoved': True, 'moves': []},
-  'BP6': {'name': 'BP6', 'color': 'black', 'location': '66', 'pic':'BP.png', 'notMoved': True, 'moves': []},
-  'BP7': {'name': 'BP7', 'color': 'black', 'location': '76', 'pic':'BP.png', 'notMoved': True, 'moves': []},
+  'WP8': {'enPassant': False, 'name': 'WP8', 'color': 'white', 'location': '01', 'pic':'WP.png', 'notMoved': True, 'moves': []},
+  'WP7': {'enPassant': False, 'name': 'WP7', 'color': 'white', 'location': '11', 'pic':'WP.png', 'notMoved': True, 'moves': []},
+  'WP6': {'enPassant': False, 'name': 'WP6', 'color': 'white', 'location': '21', 'pic':'WP.png', 'notMoved': True, 'moves': []},
+  'WP5': {'enPassant': False, 'name': 'WP5', 'color': 'white', 'location': '31', 'pic':'WP.png', 'notMoved': True, 'moves': []},
+  'WP4': {'enPassant': False, 'name': 'WP4', 'color': 'white', 'location': '41', 'pic':'WP.png', 'notMoved': True, 'moves': []},
+  'WP3': {'enPassant': False, 'name': 'WP3', 'color': 'white', 'location': '51', 'pic':'WP.png', 'notMoved': True, 'moves': []},
+  'WP2': {'enPassant': False, 'name': 'WP2', 'color': 'white', 'location': '61', 'pic':'WP.png', 'notMoved': True, 'moves': []},
+  'WP1': {'enPassant': False, 'name': 'WP1', 'color': 'white', 'location': '71', 'pic':'WP.png', 'notMoved': True, 'moves': []},
+  'BP8': {'enPassant': False, 'name': 'BP8', 'color': 'black', 'location': '06', 'pic':'BP.png', 'notMoved': True, 'moves': []},
+  'BP1': {'enPassant': False, 'name': 'BP1', 'color': 'black', 'location': '16', 'pic':'BP.png', 'notMoved': True, 'moves': []},
+  'BP2': {'enPassant': False, 'name': 'BP2', 'color': 'black', 'location': '26', 'pic':'BP.png', 'notMoved': True, 'moves': []},
+  'BP3': {'enPassant': False, 'name': 'BP3', 'color': 'black', 'location': '36', 'pic':'BP.png', 'notMoved': True, 'moves': []},
+  'BP4': {'enPassant': False, 'name': 'BP4', 'color': 'black', 'location': '46', 'pic':'BP.png', 'notMoved': True, 'moves': []},
+  'BP5': {'enPassant': False, 'name': 'BP5', 'color': 'black', 'location': '56', 'pic':'BP.png', 'notMoved': True, 'moves': []},
+  'BP6': {'enPassant': False, 'name': 'BP6', 'color': 'black', 'location': '66', 'pic':'BP.png', 'notMoved': True, 'moves': []},
+  'BP7': {'enPassant': False, 'name': 'BP7', 'color': 'black', 'location': '76', 'pic':'BP.png', 'notMoved': True, 'moves': []},
   'WR1': {'name': 'WR1', 'color': 'white', 'location': '00', 'pic':'WR.png', 'notMoved': True, 'moves': []},
   'WR2': {'name': 'WR2', 'color': 'white', 'location': '70', 'pic':'WR.png', 'notMoved': True, 'moves': []},
   'BR1': {'name': 'BR1', 'color': 'black', 'location': '07', 'pic':'BR.png', 'notMoved': True, 'moves': []},
@@ -539,39 +539,51 @@ def attac(move, position):
       else:
         return {'figure': position[key]['name'], 'holder':'blackHolder'}
 
+def pawn_finder(position, loc, color):
+  for key in position:
+    if position[key]['location'] == loc and position[key]['name'][1] == 'P' and position[key]['color'] == color:
+      return position[key]['name']
+  return False
 
-def en_passant(temp, figure, move, move_number):
-  result = []
+def en_passant(temp, figure, move_number):
+  app.logger.info('en passant started')
   pawns = []
-  ocupied_old = []
   for key in temp:
-    ocupied_old.append(temp[key]['location'])
     if temp[key]['name'][1] == 'P':
+      temp[key]['enPassant'] = False
       pawns.append(temp[key]['location'])
   x = int(temp[figure]['location'][0])
-  y = int(temp[figure]['location'][0])
+  y = int(temp[figure]['location'][1])
+  app.logger.info('x: %s' % x)
+  app.logger.info('y: %s' % y)
   if temp[figure]['name'][0] == 'W':
-    if sanity(x, y-1) not in ocupied_old:
-      if sanity(x-1, y) in pawns:
-        result.append((sanity(x, y-1), sanity(x-1, y)))
-      if sanity(x+1, y) in pawns:
-        result.append((sanity(x, y-1), sanity(x-1, y))) 
+    app.logger.info('ivestigating: %s' % temp[figure])
+    app.logger.info('x-1 %s' % pawn_finder(temp, sanity(x-1, y), 'black'))
+    app.logger.info('x+1 %s' % pawn_finder(temp, sanity(x+1, y), 'black'))
+    if pawn_finder(temp, sanity(x-1, y), 'black'):
+      name = pawn_finder(temp, sanity(x-1, y), 'black')
+      temp[name]['enPassant'] = sanity(x,y-1)
+      temp[name]['capture'] = sanity(x,y)  
+      temp[name]['moves'].append(sanity(x,y-1))
+    if pawn_finder(temp, sanity(x+1, y), 'black'):
+      name = pawn_finder(temp, sanity(x+1, y), 'black')
+      temp[name]['enPassant'] = sanity(x,y-1)
+      temp[name]['capture'] = sanity(x,y)
+      temp[name]['moves'].append(sanity(x,y-1))
   if temp[figure]['name'][0] == 'B':
-    if sanity(x, y+1) not in ocupied_old:
-      if sanity(x-1, y) in pawns:
-        result.append((sanity(x, y), sanity(x-1, y)))
-      if sanity(x+1, y) in pawns:
-        result.append((sanity(x, y-1), sanity(x-1, y)))
-  if result:
-    for n in result:
-      for key in temp:
-        if temp[key]['location']  == n[1]:
-          if 'en_passant' in temp[key]:
-            temp[key]['en_passant'].append((n[0], move_number))
-            temp[key]['capture'].append(n[1])
-          else:
-            temp[key]['en_passant'] = [(n[0], move_number)]
-            temp[key]['capture'] = [n[1]]
+    app.logger.info('ivestigating: %s' % temp[figure])
+    app.logger.info('x-1 %s' % pawn_finder(temp, sanity(x-1, y), 'white'))
+    app.logger.info('x+1 %s' % pawn_finder(temp, sanity(x+1, y), 'white'))
+    if pawn_finder(temp, sanity(x-1, y), 'white'):
+      name = pawn_finder(temp, sanity(x-1, y), 'white')
+      temp[name]['enPassant'] = sanity(x,y+1)
+      temp[name]['capture'] = sanity(x,y)
+      temp[name]['moves'].append(sanity(x,y+1))
+    if pawn_finder(temp, sanity(x+1, y), 'white'):
+      name = pawn_finder(temp, sanity(x+1, y), 'white')
+      temp[name]['enPassant'] = sanity(x,y+1)
+      temp[name]['capture'] = sanity(x,y)
+      temp[name]['moves'].append(sanity(x,y+1))
   return temp
    
 
@@ -579,9 +591,9 @@ def time_master(time, white, black, move):
   now = datetime.datetime.utcnow()
   diff = now - time
   if move == 'white':
-    white = diff.total_seconds() - black
+    white = white + diff.total_seconds()
   else:
-    black = diff.total_seconds() - white
+    black = black + diff.total_seconds()
   app.logger.info('time')
   app.logger.info('time: %s' % time)
   app.logger.info('now: %s' % now)
@@ -590,8 +602,15 @@ def time_master(time, white, black, move):
   app.logger.info('black: %s' % black)
   return {'white': white, 'black': black}       
 
+def move_length(loc, move):
+  y = int(loc[1])
+  moveY = int(move[1])
+  if moveY - y == 2 or y - moveY == 2:
+    return True
+  return False
 
 def reffery(state, figure, move):
+  app.logger.info('move: %s' % move)
   if state.move == state.position[figure]['color']:
     if state.move == 'white':
       next_move = 'black'
@@ -599,24 +618,36 @@ def reffery(state, figure, move):
       next_move = 'white'
     if move in state.position[figure]['moves']:
       temp = state.position
-      holder =  attac(move, state.position)
-      if holder:
-        temp[holder['figure']]['location'] = holder['holder']
-        temp[holder['figure']]['moves'] = []
-      elif figure[1] == 'K' and state.position[figure]['notMoved']:
-        if move == '20':
-          temp['WR1']['location'] = '30'
-        elif move == '60':
-          temp['WR2']['location'] = '50'
-        elif move == '27':
-          temp['BR1']['location'] = '37'
-        elif move == '67':
-          temp['BR2']['location'] = '57'
+      app.logger.info(state.position[figure])
+      if figure[1] == 'P' and state.position[figure]['enPassant'] == move:
+        app.logger.info('P and enPassant')
+        if state.position[figure]['enPassant'] in state.position[figure]['moves']:
+          app.logger.info('getting holder')
+          holder = attac(state.position[figure]['capture'], state.position)
+          app.logger.info('holder %s', holder)
+          temp[holder['figure']]['location'] = holder['holder']
+          temp[holder['figure']]['moves'] = []
+      else:
+        holder =  attac(move, state.position)
+        if holder:
+          temp[holder['figure']]['location'] = holder['holder']
+          temp[holder['figure']]['moves'] = []
+        elif figure[1] == 'K' and state.position[figure]['notMoved']:
+          if move == '20':
+            temp['WR1']['location'] = '30'
+          elif move == '60':
+            temp['WR2']['location'] = '50'
+          elif move == '27':
+            temp['BR1']['location'] = '37'
+          elif move == '67':
+            temp['BR2']['location'] = '57'
+      move_temp = temp[figure]['location']
+      loc_temp  = temp[figure]['location']
       temp[figure]['location'] = move
-      if temp[figure]['name'][1] == 'P' and temp[figure]['notMoved']:
-        temp = en_passant(temp, figure, move, state.move_number)
       temp[figure]['notMoved'] = False
       new_position = calculate_moves(temp)
+      if temp[figure]['name'][1] == 'P' and move_temp and move_length(loc_temp, move):
+        new_position = en_passant(new_position, figure, state.move_number)
       time = time_master(state.date, state.white_timer, state.black_timer, state.move)
       return {'next_move': next_move, 'new_position': new_position, 'time': time}
   return False

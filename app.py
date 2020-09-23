@@ -47,7 +47,7 @@ def check_cash():
 
 @app.route('/')
 def hello_world():
-    return render_template('testStartPage.html')
+    return redirect(url_for('chess'))
 
 @app.route('/jsdemo')
 def jsdemo():
@@ -67,8 +67,6 @@ def login():
       try:
         player = Player.query.filter_by(name=username).first()
         if player:
-          app.logger.info('player')
-          app.logger.info(player)
           if player.password != h:
             error = True
             wrong_password = 'Wrong password'
@@ -182,9 +180,11 @@ def move():
     figure = content.get('figure', None)
     move_number = content.get('moveNumber', None)
     gameId = content.get('gameId', None)
+    app.logger.info('gameId: %s' % gameId)
     if figure:
       if session['userId']:
-        state = State.query.join(Game).filter(or_(Game.player_one==session['userId'], Game.player_two==session['userId'])).order_by(State.move_number.desc()).first()
+        state = State.query.filter_by(game_id=gameId).order_by(State.move_number.desc()).first()
+        app.logger.info('state: %s' % state)
         legal_move = reffery(state, figure, content['move'])
         if legal_move:
           try:
@@ -196,7 +196,7 @@ def move():
           except:
             error = True
             db.session.rollback()
-            print(sys.exc_info())
+            app.logger.info('fucked up')
           finally:
             db.session.close()
           if error:
@@ -218,24 +218,6 @@ def move():
           return json.dumps(None)
   else:
     return json.dumps({'kas': 'per huiniene'})
-
-@app.route('/test')
-def test():
-  player = Player()
-  Player.insert(player)
-  session['userId'] = player.id
-  oponent = Player()
-  Player.insert(oponent)
-  new_game = Game(player_one=player.id, player_two = oponent.id)
-  Game.insert(new_game)
-  game = new_game.id
-  current_state = State(game_id=new_game.id, move_number=1,move='white',position=calculate_moves())
-  State.insert(current_state)
-  player1 = current_state.games.player
-  oponent1 = current_state.games.oponent
-  data = current_state.format()
-  db.session.close()
-  return render_template('white.html', data=json.dumps(data), player=player1, oponent=oponent1, game=game)
   
 @app.route('/chess/black/<int:game>')
 def black(game):
@@ -246,7 +228,7 @@ def black(game):
   # ONLY FOR TESTING
   session['userId'] = oponent.id
   db.session.close()
-  return render_template('black.html', data=json.dumps(data), player=oponent, oponent=player,)
+  return render_template('black.html', data=json.dumps(data), player=oponent, oponent=player, game_id=game)
 
 @app.route('/chess/white/<int:game>')
 def white(game):
@@ -258,7 +240,7 @@ def white(game):
   oponent = state.games.oponent
   #time_test = time_master(state.date, state.white_timer, state.black_timer, move)
   db.session.close()
-  return render_template('white.html', data=json.dumps(data), player=player, oponent=oponent,)#, time=time_test)
+  return render_template('white.html', data=json.dumps(data), player=player, oponent=oponent, game_id=game)#, time=time_test)
 
 @app.route('/chess')
 def chess():
@@ -299,8 +281,6 @@ def offer():
     return 'offer error'
   else:
     return redirect(url_for('chess'))
-  
-  #return jsonify(offer.format())
 
 @app.route('/chess/lobby')
 def lobby():

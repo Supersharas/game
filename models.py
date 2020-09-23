@@ -67,7 +67,7 @@ class State(db.Model):
   def format(self):
     return {
       'id': self.id,
-      #'date': self.date,
+      'date': str(self.date),
       'game_id': self.game_id,
       'move_number': self.move_number,
       'position': self.position,
