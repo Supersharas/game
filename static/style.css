@@ -7,8 +7,8 @@ body {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-  background: #98aeb3;
-  background-image: repeating-linear-gradient(-45deg, #03fcdb, #FFF 6px);
+  //background: #98aeb3;
+  //background-image: repeating-linear-gradient(-45deg,#100e14, #FFF 6px);
   text-align: center;
 }
 

@@ -591,9 +591,9 @@ def time_master(time, white, black, move):
   now = datetime.datetime.utcnow()
   diff = now - time
   if move == 'white':
-    white = diff.total_seconds() - black
+    white = white + diff.total_seconds()
   else:
-    black = diff.total_seconds() - white
+    black = black + diff.total_seconds()
   app.logger.info('time')
   app.logger.info('time: %s' % time)
   app.logger.info('now: %s' % now)

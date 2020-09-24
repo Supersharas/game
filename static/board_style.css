@@ -11,8 +11,8 @@ html {
 
 #homeTimer, #awayTimer {
   float: left;
-  min-width: 12%;
-  max-width: 12%;
+  padding-left: 0.2em;
+  padding-right: 0.2em;
   font-size: 1.2em;
   border: solid;
   border-color: green;
