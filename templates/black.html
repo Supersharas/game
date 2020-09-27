@@ -120,6 +120,25 @@
     </div>
     <div class player>{{player.name}}  {{player.id}}</div>
     <div> FOR TESTING ONLY MOVE_NUMBER: {{move_number}}</div>
+    <div id='promotion'>
+    <H2>Choose a tool of destruction</H2>
+    <button class='promElement' value="BQ" onclick="promote(this.value)">
+      <div class='promName'>Queen</div>
+      <img src='/static/BQ.png'>
+    </button>
+    <button class='promElement' value="BR" onclick="promote(this.value)">
+      <div class='promName'>Rook</div>
+      <img src='/static/BR.png'>
+    </button>
+    <button class='promElement' value="BK" onclick="promote(this.value)">
+      <div class='promName'>Knight</div>
+      <img src='/static/BK.png'>
+    </button>
+    <button class='promElement' value="BB" onclick="promote(this.value)">
+      <div class='promName'>Bishop</div>
+      <img src='/static/BB.png'>
+    </button>
+  </div>
     <script type="text/javascript">
       var data = {{data|safe}};
       var color ='black';
