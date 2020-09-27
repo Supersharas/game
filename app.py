@@ -13,7 +13,7 @@ def Random(n):
                                                   for i in range(n))
   return res
 
-from chessEngine import reffery, calculate_moves
+from chessEngine import reffery, calculate_moves, legal
 
 from models import setup_db, Game, Player, State, Offer, db
 
@@ -77,7 +77,7 @@ def login():
             db.session.commit()
             session['user'] = username
             session['info'] = random
-            session['userId'] = user_id
+            session['userId'] = player.id
             #app.logger.info('proceding')
         else:
           error = True
@@ -178,6 +178,7 @@ def move():
   if request.method == 'POST':
     content = json.loads(request.data)
     figure = content.get('figure', None)
+    promote = content.get('promote', None)
     move_number = content.get('moveNumber', None)
     gameId = content.get('gameId', None)
     app.logger.info('gameId: %s' % gameId)
@@ -185,9 +186,10 @@ def move():
       if session['userId']:
         state = State.query.filter_by(game_id=gameId).order_by(State.move_number.desc()).first()
         app.logger.info('state: %s' % state)
-        legal_move = reffery(state, figure, content['move'])
-        if legal_move:
+        check = legal(state, figure, content['move'])
+        if check == 1:
           try:
+            legal_move = reffery(state, figure, content['move'], promote)
             next_state = State(game_id=state.game_id, move_number=state.move_number+1, move=legal_move['next_move'], position=legal_move['new_position'], 
             white_timer=legal_move['time']['white'], black_timer=legal_move['time']['black'])
             State.insert(next_state)
@@ -196,14 +198,16 @@ def move():
           except:
             error = True
             db.session.rollback()
-            app.logger.info('fucked up')
+            app.logger.info(sys.exc_info())
+            app.logger.info(sys.argv[1])
           finally:
             db.session.close()
           if error:
             return json.dumps({'error': True})
           return json.dumps(data)
+          #return json.dumps({'promotion': data})
         else:
-          return json.dumps({'not': 'your move'})
+          return json.dumps({'error': check})
     if move_number:
       if session['userId']:
         cashed = cash_get(gameId, move_number)
@@ -238,9 +242,10 @@ def white(game):
   # ONLY FOR TESTING
   session['userId'] = player.id
   oponent = state.games.oponent
+  move_number = state.id
   #time_test = time_master(state.date, state.white_timer, state.black_timer, move)
   db.session.close()
-  return render_template('white.html', data=json.dumps(data), player=player, oponent=oponent, game_id=game)#, time=time_test)
+  return render_template('white.html', data=json.dumps(data), player=player, oponent=oponent, game_id=game, move_number=move_number)#, time=time_test)
 
 @app.route('/chess')
 def chess():

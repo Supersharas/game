@@ -124,11 +124,30 @@
     </div>
   <div class player>{{player.name}}  {{player.id}}</div>
   <div> FOR TESTING ONLY MOVE_NUMBER: {{move_number}} TIME: {{time}}</div>
-    <script type="text/javascript">
-      var data = {{data|safe}};
-      var color ='white';
-      var gameId = {{game_id}};
-    </script>
+  <div id='promotion'>
+    <H2>Choose a tool of destruction</H2>
+    <button class='promElement' value="WQ" onclick="promote(this.value)">
+      <div class='promName'>Queen</div>
+      <img src='/static/WQ.png'>
+    </button>
+    <button class='promElement' value="WR" onclick="promote(this.value)">
+      <div class='promName'>Rook</div>
+      <img src='/static/WR.png'>
+    </button>
+    <button class='promElement' value="WK" onclick="promote(this.value)">
+      <div class='promName'>Knight</div>
+      <img src='/static/WK.png'>
+    </button>
+    <button class='promElement' value="WB" onclick="promote(this.value)">
+      <div class='promName'>Bishop</div>
+      <img src='/static/WB.png'>
+    </button>
+  </div>
+  <script type="text/javascript">
+    var data = {{data|safe}};
+    var color ='white';
+    var gameId = {{game_id}};
+  </script>
   <script src="{{ url_for('static', filename='white.js') }}"></script> 
   </body>
 </html>

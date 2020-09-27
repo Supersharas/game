@@ -148,7 +148,15 @@ def save_king(position, key, move):
     position2[holder['figure']]['moves'] = []
   position2[key]['location'] = move
   color = position2[key]['name'][0]
+  if move == '45':
+    app.logger.info('investigating level 2 : %s' % key)
+    app.logger.info('investigating level 2 : %s' % move)
+    app.logger.info('Here must not be an error : %s' % position2)
   testdict = calculate(position2, color)
+  if move == '45':
+    app.logger.info('BhiteKingAllert : %s' % testdict['WKing']['check'])
+    app.logger.info('BlackKingAllert : %s' % testdict['BKing']['check'])
+    app.logger.info('Here must be an error : %s' % testdict)
   if color == 'W' and (testdict['WKing']['check'] == False):
     position[key]['moves'].append(move)
   elif color == 'B' and (testdict['BKing']['check'] == False):
@@ -282,8 +290,11 @@ def incline_move(position, key, x, y, enemy):
 def calculate(position, color):
   position['WKing']['check'] = False
   position['BKing']['check'] = False
+  #app.logger.info('pposition: %s' % position)
   for key in position:
+    #app.logger.info('going true: %s' % position[key])
     if position[key]['name'][0] != color:
+      app.logger.info('not going true: %s' % position[key])
       if position[key]['location'] != 'whiteHolder' and  position[key]['location'] != 'blackHolder':
         position[key]['moves'] = []      
         x = int(position[key]['location'][0])
@@ -358,11 +369,17 @@ def calculate(position, color):
             position[key]['moves'].append(sanity(x+1, y-2))
         # WHITE QUEEN
         elif position[key]['name'][1] == 'Q' and position[key]['name'][0] == 'W':
+          app.logger.info('queen check key: %s' % key)
+          app.logger.info('queen check x: %s' % x)
+          app.logger.info('queen check y: %s' % y)
           position = straight_move_test(position, key, x, y, 'B')
+          app.logger.info('queen check straight: %s' % position[key])
           position = incline_move_test(position, key, x, y, 'B')
+          app.logger.info('queen check incline: %s' % position[key])
         # BLACK QUEEN
         elif position[key]['name'][1] == 'Q' and position[key]['name'][0] == 'B':
           position = straight_move_test(position, key, x, y, 'W')
+          
           position = incline_move_test(position, key, x, y, 'W')
         #WHITE KING
         elif position[key]['name'][0:3] == 'WKi':
@@ -388,7 +405,9 @@ def calculate(position, color):
             position[key]['moves'].append(sanity(x+1, y-1))
           if not ocupied(position, sanity(x+1, y+1)) or ocupied(position, sanity(x+1, y+1)) == 'W':
             position[key]['moves'].append(sanity(x+1, y+1))
+            #-------- samre shit
           if not ocupied(position, sanity(x+1, y)) or ocupied(position, sanity(x+1, y)) == 'W':
+            app.logger.info('writing in : %s' % sanity(x+1, y))
             position[key]['moves'].append(sanity(x+1, y))
           if not ocupied(position, sanity(x-1, y-1)) or ocupied(position, sanity(x-1, y-1)) == 'W':
             position[key]['moves'].append(sanity(x-1, y-1))
@@ -494,7 +513,9 @@ def calculate_moves(position=start_position):
           position = save_king(position, key, sanity(x+1, y+1))
         if not ocupied(position, sanity(x+1, y-1)) or ocupied(position, sanity(x+1, y-1)) == 'W':
           position = save_king(position, key, sanity(x+1, y-1))
+          # - - - error?
         if not ocupied(position, sanity(x+1, y)) or ocupied(position, sanity(x+1, y)) == 'W':
+          app.logger.info('investigating level 1 : %s' % sanity(x+1, y))
           position = save_king(position, key, sanity(x+1, y))
         if not ocupied(position, sanity(x-1, y+1)) or ocupied(position, sanity(x-1, y+1)) == 'W':
           position = save_king(position, key, sanity(x-1, y+1))
@@ -557,9 +578,9 @@ def en_passant(temp, figure, move_number):
   app.logger.info('x: %s' % x)
   app.logger.info('y: %s' % y)
   if temp[figure]['name'][0] == 'W':
-    app.logger.info('ivestigating: %s' % temp[figure])
-    app.logger.info('x-1 %s' % pawn_finder(temp, sanity(x-1, y), 'black'))
-    app.logger.info('x+1 %s' % pawn_finder(temp, sanity(x+1, y), 'black'))
+    #app.logger.info('ivestigating: %s' % temp[figure])
+    #app.logger.info('x-1 %s' % pawn_finder(temp, sanity(x-1, y), 'black'))
+    #app.logger.info('x+1 %s' % pawn_finder(temp, sanity(x+1, y), 'black'))
     if pawn_finder(temp, sanity(x-1, y), 'black'):
       name = pawn_finder(temp, sanity(x-1, y), 'black')
       temp[name]['enPassant'] = sanity(x,y-1)
@@ -571,9 +592,9 @@ def en_passant(temp, figure, move_number):
       temp[name]['capture'] = sanity(x,y)
       temp[name]['moves'].append(sanity(x,y-1))
   if temp[figure]['name'][0] == 'B':
-    app.logger.info('ivestigating: %s' % temp[figure])
-    app.logger.info('x-1 %s' % pawn_finder(temp, sanity(x-1, y), 'white'))
-    app.logger.info('x+1 %s' % pawn_finder(temp, sanity(x+1, y), 'white'))
+    #app.logger.info('ivestigating: %s' % temp[figure])
+    #app.logger.info('x-1 %s' % pawn_finder(temp, sanity(x-1, y), 'white'))
+    #app.logger.info('x+1 %s' % pawn_finder(temp, sanity(x+1, y), 'white'))
     if pawn_finder(temp, sanity(x-1, y), 'white'):
       name = pawn_finder(temp, sanity(x-1, y), 'white')
       temp[name]['enPassant'] = sanity(x,y+1)
@@ -594,12 +615,12 @@ def time_master(time, white, black, move):
     white = white + diff.total_seconds()
   else:
     black = black + diff.total_seconds()
-  app.logger.info('time')
-  app.logger.info('time: %s' % time)
-  app.logger.info('now: %s' % now)
-  app.logger.info('diff: %s' % diff)
-  app.logger.info('white: %s' % white)
-  app.logger.info('black: %s' % black)
+  #app.logger.info('time')
+  #app.logger.info('time: %s' % time)
+  #app.logger.info('now: %s' % now)
+  #app.logger.info('diff: %s' % diff)
+  #app.logger.info('white: %s' % white)
+  #app.logger.info('black: %s' % black)
   return {'white': white, 'black': black}       
 
 def move_length(loc, move):
@@ -609,18 +630,39 @@ def move_length(loc, move):
     return True
   return False
 
-def reffery(state, figure, move):
-  app.logger.info('move: %s' % move)
+def promotion(temp, figure, move, wish):
+  #app.logger.info('wish: %s' % wish)
+  #app.logger.info('move: %s' % move)
+  fig = temp[figure]
+  if fig['name'][1] == 'P':
+    #app.logger.info('fig: %s' % fig)
+    if (fig['name'][0] == 'W' and move[1] == '7') or (fig['name'][0] == 'B' and move[1] == '0'):
+      color = fig['color']
+      location = fig['location']
+      moves = fig['moves']
+      temp.pop(figure, None)
+      pic = wish[:2] + '.png'
+      temp[wish] = {'name': wish, 'color': color, 'location': location, 'pic': pic, 'notMoved': False, 'moves': moves}
+      #app.logger.info('success: %s' % temp)
+      return temp
+
+def reffery(state, figure, move, promote):
+  temp = state.position
+  if promote:
+    #app.logger.info('state before: %s' % temp[figure])
+    temp = promotion(temp, figure, move, promote)
+    figure = promote
+    #app.logger.info('state after: %s' % temp[figure])
   if state.move == state.position[figure]['color']:
     if state.move == 'white':
       next_move = 'black'
     else:
       next_move = 'white'
     if move in state.position[figure]['moves']:
-      temp = state.position
+      #temp = state.position
       app.logger.info(state.position[figure])
       if figure[1] == 'P' and state.position[figure]['enPassant'] == move:
-        app.logger.info('P and enPassant')
+        #app.logger.info('P and enPassant')
         if state.position[figure]['enPassant'] in state.position[figure]['moves']:
           app.logger.info('getting holder')
           holder = attac(state.position[figure]['capture'], state.position)
@@ -642,12 +684,18 @@ def reffery(state, figure, move):
           elif move == '67':
             temp['BR2']['location'] = '57'
       move_temp = temp[figure]['location']
-      loc_temp  = temp[figure]['location']
       temp[figure]['location'] = move
       temp[figure]['notMoved'] = False
       new_position = calculate_moves(temp)
-      if temp[figure]['name'][1] == 'P' and move_temp and move_length(loc_temp, move):
+      if temp[figure]['name'][1] == 'P' and move_temp and move_length(move_temp, move):
         new_position = en_passant(new_position, figure, state.move_number)
       time = time_master(state.date, state.white_timer, state.black_timer, state.move)
       return {'next_move': next_move, 'new_position': new_position, 'time': time}
   return False
+
+def legal(state, figure, move):
+  if state.move == state.position[figure]['color']:
+    if move in state.position[figure]['moves']:
+      return 1
+    return 'Not legal move'
+  return 'Not your move'

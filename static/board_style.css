@@ -96,3 +96,44 @@ tfoot:th {
   font-size: 1.3em;
   float: right;
 }
+
+#promotion {
+  visibility: hidden;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  margin-top: -15em;
+  margin-left: -15em;
+  background: #42c934;
+  width: 25em;
+  text-align: center;
+}
+
+.promElement {
+  font-family: inherit; /* 1 */
+  font-size: 100%; /* 1 */
+  line-height: 1.15; /* 1 */
+  padding: 0;
+  text-align: center;
+  border-style: solid;
+  width: 10.3em;
+  margin-left: auto;
+  margin-right: auto; 
+  align-items: center;
+  height: 3.2em;
+  margin-bottom: 0.3em;
+  background: #42c934;
+}
+.promElement:hover {
+  background: yellow;
+}
+
+.promName {
+  display: inline-block;
+  vertical-align: middle;
+  height: 3em;
+}
+
+#promotion img {
+  height: 3em;
+}

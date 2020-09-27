@@ -1,5 +1,6 @@
 var height = document.getElementById('00').clientHeight;
 var homeMove = true;
+var temp;
 
 var homeTimer = document.getElementById('homeTimer');
 var awayTimer = document.getElementById('awayTimer');
@@ -90,7 +91,6 @@ function timer(someTime, someTimer, raw) {
   clock[raw] += 1;
   clock[someTime] = timePrinter(clock[raw]);
   someTimer.innerText = clock[someTime];
-  console.log('clock', clock);
 }
 
 //console.log('outside crazyTime', crazyTime);
@@ -137,7 +137,7 @@ function time() {
 
 function populate() {
 	var boardFigures = data.position
-  console.log('populating');
+  console.log(data);
   document.getElementById('awayCheck').style.visibility = 'hidden';
   document.getElementById('homeCheck').style.visibility = 'hidden';
 	for (key in boardFigures){
@@ -180,8 +180,45 @@ function getBack() {
 	return;
 }
 
+function getMoving(message) {
+  fetch('/chess/move',{
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+        // 'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: JSON.stringify(message)
+    }).then(response => response.json()).then(function(response){
+      console.log('response', response);
+      //console.log('crazyTime after fetch', crazyTime);
+      if (response.move){
+        data = response;
+        moveNumber = response.move_number;
+        clearBoard();
+        startFun();
+      } else if (response.promotion){
+        console.log('promotion', promotion(onTheMove));
+      }
+      
+    }).catch(function(err){
+      console.log('err', err);
+    })
+}
+
+function promotion(onTheMove) {
+  document.getElementById('promotion').style.visibility = "visible";
+}
+
+function promote(wish) {
+  let msg = wish + data.move_number.toString();
+  temp.promote = msg;
+  document.getElementById('promotion').style.visibility = "hidden";
+  getMoving(temp);
+}
+
 function ifAllowed(fig, move){
   let figure = data.position[fig];
+  console.log('fig', figure);
   let game = gameId;
 	var posx = parseInt(figure.location[0]);
 	var posy = parseInt(figure.location[1]);
@@ -189,33 +226,30 @@ function ifAllowed(fig, move){
 	var desy = posy + move.y;
 	var destination = desx.toString() + desy.toString();
 	if(figure.moves.includes(destination)) {
-    document.getElementById(destination).appendChild(onTheMove);
+    var toGo = document.getElementById(destination);
+    if(toGo.hasChildNodes()) {
+      toGo.removeChild(toGo.lastChild);
+    }
+    toGo.appendChild(onTheMove);
     onTheMove.style.position = 'relative';
     onTheMove.style.left = '0';
     onTheMove.style.top = '0';
     homeMove = false;
-		console.log('HITT');
-    //console.log('crazyTime before fetch', crazyTime);
-    fetch('/chess/move',{
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-        // 'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: JSON.stringify({'figure': figure.name, 'move': destination, 'gameId': game})
-    }).then(response => response.json()).then(function(response){
-      console.log('response', response);
-      //console.log('crazyTime after fetch', crazyTime);
-      data = response;
-      moveNumber = response.move_number;
-      clearBoard();
-      startFun();
-    }).catch(function(err){
-      console.log('err', err);
-    })
+    if(figure.name[1] == 'P'){
+      if((figure.name[0] == 'W' && destination[1] == 7) || (figure.name[0] == 'B' && destination[1] == 0)){
+        temp = {'figure': figure.name, 'move': destination, 'gameId': game};
+        promotion(onTheMove);
+      } else {
+        getMoving({'figure': figure.name, 'move': destination, 'gameId': game});
+        //promotion(onTheMove);
+        //temp = {'figure': figure.name, 'move': destination, 'gameId': game};
+      }
+    } else {
+      getMoving({'figure': figure.name, 'move': destination, 'gameId': game});
+    }
 	} else {
 		return getBack();
-	}
+  }
 }
 
 window.addEventListener('mouseup', e => {
