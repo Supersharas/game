@@ -148,15 +148,15 @@ def save_king(position, key, move):
     position2[holder['figure']]['moves'] = []
   position2[key]['location'] = move
   color = position2[key]['name'][0]
-  if move == '45':
+  if key == 'BKing':
     app.logger.info('investigating level 2 : %s' % key)
     app.logger.info('investigating level 2 : %s' % move)
-    app.logger.info('Here must not be an error : %s' % position2)
+    #app.logger.info('Here must not be an error : %s' % position2)
   testdict = calculate(position2, color)
-  if move == '45':
+  if key == 'BKing':
     app.logger.info('BhiteKingAllert : %s' % testdict['WKing']['check'])
     app.logger.info('BlackKingAllert : %s' % testdict['BKing']['check'])
-    app.logger.info('Here must be an error : %s' % testdict)
+    #app.logger.info('Here must be an error : %s' % testdict)
   if color == 'W' and (testdict['WKing']['check'] == False):
     position[key]['moves'].append(move)
   elif color == 'B' and (testdict['BKing']['check'] == False):
@@ -290,19 +290,25 @@ def incline_move(position, key, x, y, enemy):
 def calculate(position, color):
   position['WKing']['check'] = False
   position['BKing']['check'] = False
-  #app.logger.info('pposition: %s' % position)
+  app.logger.info('pposition: %s' % position)
+  n = 0
   for key in position:
-    #app.logger.info('going true: %s' % position[key])
+    n = n + 1
+    app.logger.info('color given: %s' % color)
+    app.logger.info('color: %s' % position[key]['name'][0])
     if position[key]['name'][0] != color:
-      app.logger.info('not going true: %s' % position[key])
+      app.logger.info('right color: %s' % position[key]['name'][0])
+      #app.logger.info('not going true: %s' % position[key])
       if position[key]['location'] != 'whiteHolder' and  position[key]['location'] != 'blackHolder':
-        position[key]['moves'] = []      
+        position[key]['moves'] = [] 
+        app.logger.info('key done: %s' % key)
+        app.logger.info('position done: %s' % position)     
         x = int(position[key]['location'][0])
         y = int(position[key]['location'][1])
         # WHITE POWN
         if position[key]['name'][1] == 'P' and position[key]['name'][0] == 'W':
-          if not ocupied(position, sanity(x, y+1)):
-            position[key]['moves'].append(sanity(x, y+1))
+          #if not ocupied(position, sanity(x, y+1)):
+           # position[key]['moves'].append(sanity(x, y+1))
           if position[key]['notMoved'] and not ocupied(position, sanity(x, y+2)):
             position[key]['moves'].append(sanity(x, y+2))
           if ocupied(position, sanity(x+1, y+1)) == 'B':
@@ -311,8 +317,8 @@ def calculate(position, color):
             position[key]['moves'].append(sanity(x-1, y+1))
         # BLACK POWN
         elif position[key]['name'][1] == 'P' and position[key]['name'][0] == 'B' and position[key]['name'][0] != color:
-          if not ocupied(position, sanity(x, y-1)):
-            position[key]['moves'].append(sanity(x, y-1))
+          #if not ocupied(position, sanity(x, y-1)):
+          #  position[key]['moves'].append(sanity(x, y-1))
           if position[key]['notMoved'] and not ocupied(position, sanity(x, y-2)):
             position[key]['moves'].append(sanity(x, y-2))
           if ocupied(position, sanity(x+1, y-1)) == 'W':
@@ -419,9 +425,9 @@ def calculate(position, color):
             position[key]['moves'].append(sanity(x, y-1))
           if not ocupied(position, sanity(x, y+1)) or ocupied(position, sanity(x, y+1)) == 'W':
             position[key]['moves'].append(sanity(x, y+1))
-        
-    position = check_king(position)
-    return position
+  app.logger.info('n: %s' % n)
+  position = check_king(position)
+  return position
 
 def calculate_moves(position=start_position):
   position['WKing']['check'] = False

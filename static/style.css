@@ -10,6 +10,8 @@ body {
   //background: #98aeb3;
   //background-image: repeating-linear-gradient(-45deg,#100e14, #FFF 6px);
   text-align: center;
+  //background-image: url('/static/background.jpg');
+  background-size: 100% 200%;
 }
 
 #menuHolder {
