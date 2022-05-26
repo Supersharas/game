@@ -107,7 +107,7 @@ termcolor==1.1.0
 tomlkit==0.5.11
 tqdm==4.46.1
 typing-extensions==3.7.4.2
-ujson==1.35
+ujson==5.2.0
 urllib3==1.25.9
 wcwidth==0.2.5
 webencodings==0.5.1
